@@ -12,28 +12,37 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
+  if (!body.asset) return NextResponse.json({ error: 'Asset name required' }, { status: 400 });
+
+  const initialQty = body.qty_in_office ?? 0;
+
   const { data, error } = await supabase.from('components').insert({
     asset: body.asset,
     brand: body.brand || null,
     vendor: body.vendor || null,
-    total_qty_purchased: body.total_qty_purchased || 0,
-    qty_returned_from_facilities: body.qty_returned_from_facilities || 0,
-    old_stock: body.old_stock || 0,
-    qty_in_new_purchases: body.qty_in_new_purchases || 0,
-    qty_out: body.qty_out || 0,
-    qty_returned_to_vendor: body.qty_returned_to_vendor || 0,
-    qty_in_office: body.qty_in_office || 0,
+    qty_in_office: initialQty,
+    // legacy fields — zero-filled
+    total_qty_purchased: initialQty,
+    qty_returned_from_facilities: 0,
+    old_stock: 0,
+    qty_in_new_purchases: initialQty,
+    qty_out: 0,
+    qty_returned_to_vendor: 0,
   }).select().single();
+
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  // Log it
-  await supabase.from('stock_transactions').insert({
-    component_id: data.id,
-    type: 'in',
-    quantity: body.qty_in_office || 0,
-    reason: 'New inventory added',
-    notes: `Added: ${body.asset}`,
-    performed_by: body.performed_by || 'System',
-    action_type: 'ADD_INVENTORY',
-  });
+
+  if (initialQty > 0) {
+    await supabase.from('stock_transactions').insert({
+      component_id: data.id,
+      type: 'in',
+      quantity: initialQty,
+      reason: 'Initial stock',
+      notes: `Added: ${body.asset}`,
+      performed_by: 'System',
+      action_type: 'ADD_INVENTORY',
+    });
+  }
+
   return NextResponse.json(data);
 }
