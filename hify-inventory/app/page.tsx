@@ -661,91 +661,33 @@ function InventoryModal({item,onSave,onClose}: {item:Component|null;onSave:(d:an
   );
 }
 
-// ─── Slot Picker — searchable component picker for a single role ───────────────
-function SlotPicker({ role, label, inventory, chosenId, onChange }: {
-  role: string; label: string; inventory: Component[];
-  chosenId: string; onChange: (id: string) => void;
-}) {
-  const [search, setSearch] = useState('');
-  const chosen = inventory.find(i=>i.id===chosenId);
-  const filtered = search.trim()
-    ? inventory.filter(i=>i.asset.toLowerCase().includes(search.toLowerCase())||(i.brand||'').toLowerCase().includes(search.toLowerCase()))
-    : inventory;
-
-  return (
-    <div style={{borderRadius:12,border:'1px solid var(--hify-border)',overflow:'hidden'}}>
-      {/* Header: label + selected item */}
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 12px',background:'var(--hify-surface2)'}}>
-        <span style={{fontSize:11,fontWeight:600,color:'var(--hify-orange)',textTransform:'uppercase',letterSpacing:'0.06em'}}>{label}</span>
-        {chosen
-          ? <div style={{display:'flex',alignItems:'center',gap:6}}>
-              <span style={{fontSize:12,fontWeight:600,color:'white',maxWidth:140,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{chosen.asset}</span>
-              <button onClick={()=>onChange('')} style={{background:'none',border:'none',cursor:'pointer',color:'var(--hify-muted)',padding:0,display:'flex',alignItems:'center'}}><I.Close/></button>
-            </div>
-          : <span style={{fontSize:12,color:'var(--hify-muted)'}}>None</span>
-        }
-      </div>
-      {/* Search */}
-      <div style={{display:'flex',alignItems:'center',gap:8,padding:'0 12px',height:36,borderBottom:'1px solid var(--hify-border)',background:'var(--hify-bg)'}}>
-        <span style={{color:'var(--hify-muted)',flexShrink:0,display:'flex'}}><I.Search/></span>
-        <input
-          style={{flex:1,fontSize:13,background:'transparent',border:'none',outline:'none',color:'var(--hify-text)'}}
-          placeholder={`Search ${label}…`}
-          value={search}
-          onChange={e=>setSearch(e.target.value)}
-        />
-      </div>
-      {/* Item list */}
-      <div style={{maxHeight:140,overflowY:'auto',background:'var(--hify-bg)'}}>
-        {filtered.length===0
-          ? <p style={{fontSize:12,color:'var(--hify-muted)',textAlign:'center',padding:'12px 0',margin:0}}>No items found</p>
-          : filtered.map((item,idx)=>{
-              const isSelected = item.id===chosenId;
-              return (
-                <button key={item.id} onClick={()=>onChange(isSelected?'':item.id)}
-                  style={{width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 12px',
-                    background:isSelected?'rgba(255,107,53,0.1)':'transparent',
-                    border:'none',borderBottom:idx<filtered.length-1?'1px solid var(--hify-border)':'none',cursor:'pointer',textAlign:'left'}}>
-                  <div style={{minWidth:0}}>
-                    <p style={{fontSize:13,fontWeight:500,color:isSelected?'var(--hify-orange)':'white',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.asset}</p>
-                    {item.brand && <p style={{fontSize:11,color:'var(--hify-muted)',margin:'1px 0 0'}}>{item.brand}</p>}
-                  </div>
-                  <span style={{fontSize:11,fontWeight:600,flexShrink:0,marginLeft:8,
-                    color:item.qty_in_office===0?'var(--hify-pink)':item.qty_in_office<=3?'var(--hify-yellow)':'var(--hify-green)'}}>
-                    {item.qty_in_office===0?'Out':item.qty_in_office<=3?`${item.qty_in_office} left`:`${item.qty_in_office}`}
-                  </span>
-                </button>
-              );
-            })
-        }
-      </div>
-    </div>
-  );
-}
-
 // ─── Pi Build Modal ────────────────────────────────────────────────────────────
 function PiModal({pi,inventory,onSave,onClose}: {pi:PiUnit|null;inventory:Component[];onSave:(d:any)=>void;onClose:()=>void}) {
   const existingComps = pi?.pi_components||[];
-  const initSlots: Record<string,string> = {};
-  existingComps.forEach(c=>{ if(c.notes) initSlots[c.notes]=c.component_id; });
+  const initSelected = new Set(existingComps.map(c=>c.component_id));
 
-  const [label,  setLabel]  = useState(pi?.label||'');
-  const [serial, setSerial] = useState(pi?.serial_number||'');
-  const [status, setStatus] = useState(pi?.status||'in_office');
-  const [notes,  setNotes]  = useState(pi?.notes||'');
-  const [slots,  setSlots]  = useState<Record<string,string>>(initSlots);
-  const [saving, setSaving] = useState(false);
+  const [label,      setLabel]      = useState(pi?.label||'');
+  const [serial,     setSerial]     = useState(pi?.serial_number||'');
+  const [status,     setStatus]     = useState(pi?.status||'in_office');
+  const [notes,      setNotes]      = useState(pi?.notes||'');
+  const [selected,   setSelected]   = useState<Set<string>>(initSelected);
+  const [compSearch, setCompSearch] = useState('');
+  const [saving,     setSaving]     = useState(false);
 
-  const setSlot = (role:string, componentId:string) => setSlots(s=>({...s,[role]:componentId}));
+  const toggle = (id: string) => setSelected(s=>{ const n=new Set(s); n.has(id)?n.delete(id):n.add(id); return n; });
 
-  const existingIds = new Set(existingComps.map(c=>c.component_id));
-  const newlyAdded  = Object.values(slots).filter(id=>id&&!existingIds.has(id)).length;
-  const removed     = existingComps.filter(c=>!Object.values(slots).includes(c.component_id)).length;
+  const existingIds = initSelected;
+  const newlyAdded  = [...selected].filter(id=>!existingIds.has(id)).length;
+  const removed     = [...existingIds].filter(id=>!selected.has(id)).length;
+
+  const filtered = compSearch.trim()
+    ? inventory.filter(i=>i.asset.toLowerCase().includes(compSearch.toLowerCase())||(i.brand||'').toLowerCase().includes(compSearch.toLowerCase()))
+    : inventory;
 
   const handleSave = async () => {
     if (!label.trim()) return;
     setSaving(true);
-    const components = Object.entries(slots).filter(([,id])=>id).map(([role,component_id])=>({component_id,role}));
+    const components = [...selected].map(component_id=>({component_id, role:''}));
     await onSave({label:label.trim(),serial_number:serial||`HiFy-${Date.now()}`,status,notes,components});
     setSaving(false);
   };
@@ -778,14 +720,45 @@ function PiModal({pi,inventory,onSave,onClose}: {pi:PiUnit|null;inventory:Compon
             </div>
           </div>
 
-          {/* Component slots */}
-          <div style={{background:'rgba(255,107,53,0.06)',border:'1px solid rgba(255,107,53,0.15)',borderRadius:14,padding:'14px 14px 12px'}}>
-            <p style={{fontSize:12,fontWeight:600,color:'var(--hify-orange)',margin:'0 0 12px'}}>🔧 Assembled Components</p>
-            <div style={{display:'flex',flexDirection:'column',gap:10}}>
-              {COMPONENT_ROLES.map(role=>(
-                <SlotPicker key={role} role={role} label={ROLE_LABELS[role]}
-                  inventory={inventory} chosenId={slots[role]||''} onChange={id=>setSlot(role,id)}/>
-              ))}
+          {/* Component picker */}
+          <div style={{borderRadius:14,border:'1px solid var(--hify-border)',overflow:'hidden'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,padding:'0 14px',height:44,borderBottom:'1px solid var(--hify-border)',background:'var(--hify-surface2)'}}>
+              <span style={{color:'var(--hify-muted)',flexShrink:0,display:'flex'}}><I.Search/></span>
+              <input style={{flex:1,fontSize:14,background:'transparent',border:'none',outline:'none',color:'var(--hify-text)'}}
+                placeholder="Search components…" value={compSearch} onChange={e=>setCompSearch(e.target.value)}/>
+              {selected.size>0 && <span style={{fontSize:12,fontWeight:600,color:'var(--hify-orange)',flexShrink:0}}>{selected.size} selected</span>}
+            </div>
+            <div style={{maxHeight:220,overflowY:'auto'}}>
+              {filtered.length===0
+                ? <p style={{fontSize:13,color:'var(--hify-muted)',textAlign:'center',padding:'20px 0',margin:0}}>No components found</p>
+                : filtered.map((item,idx)=>{
+                    const isSelected = selected.has(item.id);
+                    const outOfStock = item.qty_in_office===0;
+                    return (
+                      <button key={item.id}
+                        onClick={()=>{ if(!outOfStock) toggle(item.id); }}
+                        style={{width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',
+                          padding:'10px 14px',background:isSelected?'rgba(255,107,53,0.08)':'transparent',
+                          border:'none',borderBottom:idx<filtered.length-1?'1px solid var(--hify-border)':'none',
+                          cursor:outOfStock?'default':'pointer',textAlign:'left',
+                          opacity:outOfStock?0.45:1}}>
+                        <div style={{minWidth:0,flex:1}}>
+                          <p style={{fontSize:13,fontWeight:500,color:isSelected?'var(--hify-orange)':'white',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.asset}</p>
+                          {item.brand && <p style={{fontSize:11,color:'var(--hify-muted)',margin:'2px 0 0'}}>{item.brand}</p>}
+                        </div>
+                        <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0,marginLeft:10}}>
+                          <span style={{fontSize:11,fontWeight:600,
+                            color:outOfStock?'var(--hify-pink)':item.qty_in_office<=3?'var(--hify-yellow)':'var(--hify-green)'}}>
+                            {outOfStock?'Out of stock':item.qty_in_office<=3?`${item.qty_in_office} left`:`${item.qty_in_office} in stock`}
+                          </span>
+                          {isSelected && <span style={{width:18,height:18,borderRadius:'50%',background:'var(--hify-orange)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          </span>}
+                        </div>
+                      </button>
+                    );
+                  })
+              }
             </div>
           </div>
 
