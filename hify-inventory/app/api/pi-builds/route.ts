@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     id,
     serial_number: body.serial_number || `HiFy-${Date.now()}`,
     label: body.label,
-    status: 'in_office',
+    status: body.status || 'in_office',
     notes: body.notes || null,
     qr_code: body.qr_code || null,
   });

@@ -137,11 +137,17 @@ export default function Home() {
   };
 
   const generateQR = async (pi: PiUnit) => {
-    const res = await fetch('/api/qr',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:JSON.stringify({id:pi.id,label:pi.label})})});
-    const {qr} = await res.json();
-    // Save QR back to pi
-    await fetch(`/api/pi-builds/${pi.id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...pi,qr_code:qr,components:(pi.pi_components||[]).map(c=>({component_id:c.component_id,role:c.notes}))})});
-    setViewingPiQR({pi,qr});
+    try {
+      const res = await fetch('/api/qr',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:JSON.stringify({id:pi.id,label:pi.label})})});
+      if (!res.ok) throw new Error('QR generation failed');
+      const {qr} = await res.json();
+      // Save QR back to pi
+      const saveRes = await fetch(`/api/pi-builds/${pi.id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...pi,qr_code:qr,components:(pi.pi_components||[]).map(c=>({component_id:c.component_id,role:c.notes}))})});
+      if (!saveRes.ok) throw new Error('Failed to save QR');
+      setViewingPiQR({pi,qr});
+    } catch (e: any) {
+      showToast(e?.message || 'Failed to generate QR', 'error');
+    }
   };
 
   const filteredInventory = inventory.filter(i=>i.asset?.toLowerCase().includes(search.toLowerCase())||(i.brand||'').toLowerCase().includes(search.toLowerCase()));
