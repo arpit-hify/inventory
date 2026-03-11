@@ -243,16 +243,17 @@ export default function Home() {
             <div className="slide-up" style={{display:'flex',flexDirection:'column',gap:14}}>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
                 {[
-                  {l:'In Stock',     v:totalUnits,  icon:'📦', c:'var(--hify-orange)', bg:'rgba(255,107,53,0.1)'},
-                  {l:'Pi Builds',    v:pis.length,   icon:'🖥️', c:'var(--hify-purple)', bg:'rgba(167,139,250,0.1)'},
-                  {l:'Low Stock',    v:lowStock,     icon:'⚠️', c:'var(--hify-yellow)', bg:'rgba(251,191,36,0.1)'},
-                  {l:'Out of Stock', v:outOfStock,   icon:'🚫', c:'var(--hify-pink)',   bg:'rgba(255,61,110,0.1)'},
+                  {l:'In Stock',     v:totalUnits,  icon:'📦', c:'var(--hify-orange)', bg:'rgba(255,107,53,0.1)',  tab:'inventory' as const},
+                  {l:'Pi Builds',    v:pis.length,   icon:'🖥️', c:'var(--hify-purple)', bg:'rgba(167,139,250,0.1)', tab:'pis'       as const},
+                  {l:'Low Stock',    v:lowStock,     icon:'⚠️', c:'var(--hify-yellow)', bg:'rgba(251,191,36,0.1)', tab:'inventory' as const},
+                  {l:'Out of Stock', v:outOfStock,   icon:'🚫', c:'var(--hify-pink)',   bg:'rgba(255,61,110,0.1)', tab:'inventory' as const},
                 ].map(s=>(
-                  <div key={s.l} className="card" style={{padding:16}}>
+                  <button key={s.l} onClick={()=>setTab(s.tab)} className="card"
+                    style={{padding:16,textAlign:'left',border:'none',cursor:'pointer',display:'block',width:'100%'}}>
                     <div style={{width:42,height:42,borderRadius:13,background:s.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,marginBottom:12}}>{s.icon}</div>
                     <div className="font-display" style={{fontWeight:700,fontSize:30,color:s.c,lineHeight:1}}>{loading?'—':s.v}</div>
                     <div style={{fontSize:12,color:'var(--hify-muted)',marginTop:5}}>{s.l}</div>
-                  </div>
+                  </button>
                 ))}
               </div>
 
