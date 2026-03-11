@@ -96,6 +96,7 @@ export default function Home() {
   const [loading, setLoading]       = useState(true);
   const [toast, setToast]           = useState<{msg:string;type:'success'|'error'}|null>(null);
   const [search, setSearch]         = useState('');
+  const [stockFilter, setStockFilter] = useState<'all'|'low'|'out'>('all');
   const [showQRScanner, setShowQRScanner] = useState(false);
 
   // inventory modals
@@ -190,10 +191,11 @@ export default function Home() {
     }
   };
 
-  const filteredInventory = inventory.filter(i=>
-    i.asset?.toLowerCase().includes(search.toLowerCase())||
-    (i.brand||'').toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredInventory = inventory.filter(i=>{
+    const matchSearch = i.asset?.toLowerCase().includes(search.toLowerCase())||(i.brand||'').toLowerCase().includes(search.toLowerCase());
+    const matchStock = stockFilter==='all' || (stockFilter==='low' && i.qty_in_office>0 && i.qty_in_office<=3) || (stockFilter==='out' && i.qty_in_office===0);
+    return matchSearch && matchStock;
+  });
   const filteredPis  = pis.filter(p=>p.label?.toLowerCase().includes(search.toLowerCase()));
   const totalUnits   = inventory.reduce((s,i)=>s+(i.qty_in_office||0),0);
   const lowStock     = inventory.filter(i=>i.qty_in_office<=3&&i.qty_in_office>0).length;
@@ -306,6 +308,16 @@ export default function Home() {
                   <input style={{flex:1,fontSize:14,background:'transparent',border:'none',outline:'none',color:'var(--hify-text)'}} placeholder="Search assets…" value={search} onChange={e=>setSearch(e.target.value)}/>
                 </div>
                 <button onClick={()=>{setEditingInventory(null);setShowInventoryModal(true);}} className="btn-primary" style={{width:44,height:44,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><I.Plus/></button>
+              </div>
+              <div style={{display:'flex',gap:8}}>
+                {([['all','All'],['low','Low Stock'],['out','Out of Stock']] as const).map(([val,label])=>(
+                  <button key={val} onClick={()=>setStockFilter(val)}
+                    style={{height:32,padding:'0 14px',borderRadius:100,fontSize:12,fontWeight:600,border:'none',cursor:'pointer',
+                      background:stockFilter===val?(val==='all'?'var(--hify-orange)':val==='low'?'var(--hify-yellow)':'var(--hify-pink)'):'var(--hify-surface2)',
+                      color:stockFilter===val?'white':'var(--hify-muted)'}}>
+                    {label}
+                  </button>
+                ))}
               </div>
 
               {loading ? (
@@ -432,7 +444,7 @@ export default function Home() {
             {navItems.map(({id,l,Icon})=>{
               const active = tab===id;
               return (
-                <button key={id} onClick={()=>{setTab(id);setSearch('');}} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4,paddingTop:12,paddingBottom:10,color:active?'var(--hify-orange)':'var(--hify-muted)',background:'transparent',border:'none',cursor:'pointer'}}>
+                <button key={id} onClick={()=>{setTab(id);setSearch('');setStockFilter('all');}} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4,paddingTop:12,paddingBottom:10,color:active?'var(--hify-orange)':'var(--hify-muted)',background:'transparent',border:'none',cursor:'pointer'}}>
                   <Icon/>
                   <span style={{fontSize:11,fontWeight:active?600:400}}>{l}</span>
                   <div style={{width:4,height:4,borderRadius:'50%',background:active?'var(--hify-orange)':'transparent'}}/>
@@ -661,14 +673,17 @@ function PiModal({pi,inventory,onSave,onClose}: {pi:PiUnit|null;inventory:Compon
   const [notes,  setNotes]  = useState(pi?.notes||'');
   const [slots,  setSlots]  = useState<Record<string,string>>(initSlots);
   const [saving, setSaving] = useState(false);
+  const [compSearch, setCompSearch] = useState('');
 
   const setSlot = (role:string, componentId:string) => setSlots(s=>({...s,[role]:componentId}));
-  const getOptionsForRole = (role:ComponentRole) => inventory.filter(i=>detectRole(i.asset)===role);
 
-  // Count how many new components will be deducted from inventory
   const existingIds = new Set(existingComps.map(c=>c.component_id));
   const newlyAdded  = Object.values(slots).filter(id=>id&&!existingIds.has(id)).length;
   const removed     = existingComps.filter(c=>!Object.values(slots).includes(c.component_id)).length;
+
+  const searchedInventory = compSearch.trim()
+    ? inventory.filter(i=>i.asset.toLowerCase().includes(compSearch.toLowerCase())||(i.brand||'').toLowerCase().includes(compSearch.toLowerCase()))
+    : inventory;
 
   const handleSave = async () => {
     if (!label.trim()) return;
@@ -708,22 +723,25 @@ function PiModal({pi,inventory,onSave,onClose}: {pi:PiUnit|null;inventory:Compon
 
           {/* Component slots */}
           <div style={{background:'rgba(255,107,53,0.06)',border:'1px solid rgba(255,107,53,0.15)',borderRadius:14,padding:'14px 14px 10px'}}>
-            <p style={{fontSize:12,fontWeight:600,color:'var(--hify-orange)',margin:'0 0 12px'}}>🔧 Assembled Components</p>
+            <p style={{fontSize:12,fontWeight:600,color:'var(--hify-orange)',margin:'0 0 10px'}}>🔧 Assembled Components</p>
+            {/* Search bar for components */}
+            <div className="hify-input" style={{display:'flex',alignItems:'center',gap:8,padding:'0 12px',height:38,marginBottom:12}}>
+              <I.Search/>
+              <input style={{flex:1,fontSize:13,background:'transparent',border:'none',outline:'none',color:'var(--hify-text)'}} placeholder="Search components…" value={compSearch} onChange={e=>setCompSearch(e.target.value)}/>
+            </div>
             <div style={{display:'flex',flexDirection:'column',gap:10}}>
               {COMPONENT_ROLES.map(role=>{
-                const opts = getOptionsForRole(role);
                 const chosen = slots[role];
-                const chosenItem = opts.find(o=>o.id===chosen);
-                const isOutOfStock = chosenItem && chosenItem.qty_in_office===0 && !existingIds.has(chosen);
                 return (
                   <div key={role}>
-                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:5}}>
-                      <label style={S.label}>{ROLE_LABELS[role]}</label>
-                      {isOutOfStock && <span style={{fontSize:11,color:'var(--hify-pink)',fontWeight:600}}>⚠️ Out of stock</span>}
-                    </div>
-                    <select className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:13,appearance:'auto',borderColor:isOutOfStock?'var(--hify-pink)':'undefined'}} value={chosen||''} onChange={e=>setSlot(role,e.target.value)}>
+                    <label style={S.label}>{ROLE_LABELS[role]}</label>
+                    <select className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:13,appearance:'auto'}} value={chosen||''} onChange={e=>setSlot(role,e.target.value)}>
                       <option value="">— None —</option>
-                      {opts.map(o=><option key={o.id} value={o.id} disabled={o.qty_in_office===0&&!existingIds.has(o.id)}>{o.asset} {o.qty_in_office===0?'(out of stock)':o.qty_in_office<=3?`(${o.qty_in_office} left)`:`(${o.qty_in_office} in stock)`}</option>)}
+                      {searchedInventory.map(o=>(
+                        <option key={o.id} value={o.id}>
+                          {o.asset}{o.brand?` · ${o.brand}`:''} ({o.qty_in_office} in stock)
+                        </option>
+                      ))}
                     </select>
                   </div>
                 );
