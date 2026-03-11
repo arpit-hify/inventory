@@ -24,28 +24,33 @@ interface Log {
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const I = {
-  Home: () => <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-  Box: () => <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>,
-  Cpu: () => <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>,
+  Home:     () => <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+  Box:      () => <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>,
+  Cpu:      () => <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>,
   Activity: () => <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
-  Qr: () => <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><line x1="20" y1="14" x2="20" y2="17"/><line x1="17" y1="17" x2="17" y2="20"/><line x1="20" y1="20" x2="20" y2="20"/></svg>,
-  Plus: () => <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
-  Edit: () => <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
-  Trash: () => <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>,
-  Close: () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
-  Search: () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+  Qr:       () => <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><line x1="20" y1="14" x2="20" y2="17"/><line x1="17" y1="17" x2="17" y2="20"/><line x1="20" y1="20" x2="20" y2="20"/></svg>,
+  Plus:     () => <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+  Edit:     () => <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+  Trash:    () => <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>,
+  Close:    () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+  Search:   () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
   Download: () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
-  Refresh: () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>,
+  Refresh:  () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>,
 };
 
 function actionColor(a: string|null) { return (!a||a.includes('DELETE')) ? 'badge-red' : (a.includes('CREATE')||a.includes('ADD')) ? 'badge-green' : 'badge-orange'; }
 function actionLabel(a: string|null) { return ({ADD_INVENTORY:'Added',UPDATE_INVENTORY:'Updated',DELETE_INVENTORY:'Deleted',CREATE_PI_BUILD:'Pi Created',UPDATE_PI_BUILD:'Pi Updated',DELETE_PI_BUILD:'Pi Deleted'} as any)[a||''] || (a||'Action'); }
 
 function Toast({ msg, type }: { msg: string; type: 'success'|'error' }) {
-  return <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 rounded-2xl text-sm font-medium slide-up shadow-2xl" style={{background:type==='success'?'var(--hify-green)':'var(--hify-pink)',color:'white',whiteSpace:'nowrap'}}>{msg}</div>;
+  return (
+    <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[200] px-5 py-3 rounded-2xl text-sm font-semibold slide-up"
+      style={{background:type==='success'?'var(--hify-green)':'var(--hify-pink)',color:'white',whiteSpace:'nowrap',boxShadow:'0 8px 32px rgba(0,0,0,0.4)'}}>
+      {msg}
+    </div>
+  );
 }
 
-// ─── COMPONENT ROLE SLOTS ─────────────────────────────────────────────────────
+// ─── Component role slots ──────────────────────────────────────────────────────
 const COMPONENT_ROLES = ['ssd','hat','cooler','sd_card','power_cable','metal_case'] as const;
 type ComponentRole = typeof COMPONENT_ROLES[number];
 const ROLE_LABELS: Record<ComponentRole, string> = {ssd:'SSD / NVMe',hat:'HAT',cooler:'Active Cooler',sd_card:'SD Card',power_cable:'Power Cable',metal_case:'Metal Case'};
@@ -59,6 +64,16 @@ function detectRole(asset: string): ComponentRole|null {
   if (a.includes('case')) return 'metal_case';
   return null;
 }
+
+// ─── Shared style helpers ──────────────────────────────────────────────────────
+const S = {
+  iconBtn: (color: string, bg: string) => ({
+    width:36, height:36, borderRadius:10, background:bg, color,
+    display:'flex' as const, alignItems:'center' as const, justifyContent:'center' as const,
+    border:'none', cursor:'pointer' as const, flexShrink:0,
+  }),
+  label: { fontSize:12, fontWeight:500, color:'var(--hify-muted)', display:'block' as const, marginBottom:6 },
+};
 
 export default function Home() {
   const [tab, setTab] = useState<'home'|'inventory'|'pis'|'logs'>('home');
@@ -141,246 +156,321 @@ export default function Home() {
       const res = await fetch('/api/qr',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:JSON.stringify({id:pi.id,label:pi.label})})});
       if (!res.ok) throw new Error('QR generation failed');
       const {qr} = await res.json();
-      // Save QR back to pi
       const saveRes = await fetch(`/api/pi-builds/${pi.id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...pi,qr_code:qr,components:(pi.pi_components||[]).map(c=>({component_id:c.component_id,role:c.notes}))})});
       if (!saveRes.ok) throw new Error('Failed to save QR');
       setViewingPiQR({pi,qr});
     } catch (e: any) {
-      showToast(e?.message || 'Failed to generate QR', 'error');
+      showToast(e?.message||'Failed to generate QR','error');
     }
   };
 
-  const filteredInventory = inventory.filter(i=>i.asset?.toLowerCase().includes(search.toLowerCase())||(i.brand||'').toLowerCase().includes(search.toLowerCase()));
+  const filteredInventory = inventory.filter(i=>
+    i.asset?.toLowerCase().includes(search.toLowerCase())||
+    (i.brand||'').toLowerCase().includes(search.toLowerCase())
+  );
   const filteredPis = pis.filter(p=>p.label?.toLowerCase().includes(search.toLowerCase()));
-  const totalUnits = inventory.reduce((s,i)=>s+(i.qty_in_office||0),0);
-  const lowStock = inventory.filter(i=>i.qty_in_office<=2&&i.qty_in_office>0).length;
-  const outOfStock = inventory.filter(i=>i.qty_in_office===0).length;
+  const totalUnits  = inventory.reduce((s,i)=>s+(i.qty_in_office||0),0);
+  const lowStock    = inventory.filter(i=>i.qty_in_office<=2&&i.qty_in_office>0).length;
+  const outOfStock  = inventory.filter(i=>i.qty_in_office===0).length;
 
   const navItems = [
-    {id:'home' as const, l:'Home', Icon:I.Home},
-    {id:'inventory' as const, l:'Assets', Icon:I.Box},
-    {id:'pis' as const, l:'Pi Builds', Icon:I.Cpu},
-    {id:'logs' as const, l:'Logs', Icon:I.Activity},
+    {id:'home'      as const, l:'Home',      Icon:I.Home},
+    {id:'inventory' as const, l:'Assets',    Icon:I.Box},
+    {id:'pis'       as const, l:'Pi Builds', Icon:I.Cpu},
+    {id:'logs'      as const, l:'Logs',      Icon:I.Activity},
   ];
 
+  // ── RENDER ────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen" style={{background:'var(--hify-dark)'}}>
-      {toast && <Toast msg={toast.msg} type={toast.type}/>}
-      {showQRScanner && <QRScanner onScan={handleQRScan} onClose={()=>setShowQRScanner(false)}/>}
+    // Outer shell — fills the viewport, centers the phone-width container
+    <div style={{background:'var(--hify-bg)',height:'100dvh',display:'flex',justifyContent:'center',overflow:'hidden'}}>
 
-      {/* HEADER — sticky */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 md:px-8" style={{background:'var(--hify-dark)',borderBottom:'1px solid var(--hify-border)'}}>
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{background:'linear-gradient(135deg,#FF6B2B,#FF3D6E)'}}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" fill="white" fillOpacity=".9"/><rect x="9" y="9" width="6" height="6" fill="#FF6B2B"/></svg>
+      {/* Phone container — flex column so nav always sits at the bottom */}
+      <div style={{width:'100%',maxWidth:430,height:'100%',display:'flex',flexDirection:'column',background:'var(--hify-bg)',position:'relative'}}>
+
+        {toast && <Toast msg={toast.msg} type={toast.type}/>}
+        {showQRScanner && <QRScanner onScan={handleQRScan} onClose={()=>setShowQRScanner(false)}/>}
+
+        {/* ── HEADER ── */}
+        <header style={{
+          flexShrink:0, display:'flex', alignItems:'center', justifyContent:'space-between',
+          padding:'14px 20px', borderBottom:'1px solid var(--hify-border)',
+        }}>
+          <div style={{display:'flex',alignItems:'center',gap:10}}>
+            <div style={{width:36,height:36,borderRadius:12,background:'linear-gradient(135deg,#FF6B35,#FF3D6E)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                <rect x="4" y="4" width="16" height="16" rx="2.5" fill="white" fillOpacity=".95"/>
+                <rect x="9" y="9" width="6" height="6" fill="#FF6B35"/>
+              </svg>
+            </div>
+            <div>
+              <span className="font-display" style={{fontWeight:700,fontSize:15,color:'white',letterSpacing:'-0.3px'}}>HiFy</span>
+              <span style={{fontSize:13,color:'var(--hify-muted)',marginLeft:6}}>Inventory</span>
+            </div>
           </div>
-          <span className="font-display font-bold" style={{color:'var(--hify-text)'}}>HiFy</span>
-          <span className="font-display text-sm" style={{color:'var(--hify-muted)'}}>Inventory</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={fetchAll} className="p-2 rounded-xl" style={{background:'rgba(0,0,0,0.06)',color:'var(--hify-muted)'}} title="Refresh"><I.Refresh/></button>
-          <button onClick={()=>setShowQRScanner(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold" style={{background:'rgba(255,107,43,0.15)',color:'var(--hify-orange)'}}>
-            <I.Qr/> Scan
-          </button>
-        </div>
-      </header>
+          <div style={{display:'flex',gap:8}}>
+            <button onClick={fetchAll} style={S.iconBtn('var(--hify-muted)','var(--hify-surface2)')} title="Refresh"><I.Refresh/></button>
+            <button onClick={()=>setShowQRScanner(true)}
+              style={{height:36,padding:'0 14px',borderRadius:10,background:'rgba(255,107,53,0.12)',color:'var(--hify-orange)',display:'flex',alignItems:'center',gap:6,fontSize:13,fontWeight:600,border:'none',cursor:'pointer'}}>
+              <I.Qr/> Scan
+            </button>
+          </div>
+        </header>
 
-      <div className="flex">
-        {/* Desktop sidebar nav */}
-        <aside className="hidden md:flex flex-col w-52 shrink-0 sticky top-14 h-[calc(100vh-56px)] overflow-y-auto py-5 px-3 border-r" style={{borderColor:'var(--hify-border)'}}>
-          {navItems.map(({id,l,Icon})=>{
-            const active = tab===id;
-            return (
-              <button key={id} onClick={()=>{setTab(id);setSearch('');}}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium mb-1 w-full text-left transition-colors"
-                style={{background:active?'rgba(255,107,43,0.10)':'transparent',color:active?'var(--hify-orange)':'var(--hify-muted)'}}>
-                <Icon/>{l}
-              </button>
-            );
-          })}
-        </aside>
+        {/* ── SCROLLABLE CONTENT ── */}
+        <main style={{flex:1,overflowY:'auto',padding:'16px 16px 8px'}}>
 
-        {/* Main content */}
-        <main className="flex-1 px-4 py-4 pb-28 md:pb-10 md:px-8 md:max-w-3xl">
+          {/* HOME */}
+          {tab==='home' && (
+            <div className="slide-up" style={{display:'flex',flexDirection:'column',gap:14}}>
 
-        {/* ── HOME ── */}
-        {tab==='home' && (
-          <div className="slide-up space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              {[{l:'Total Units',v:totalUnits,e:'📦',c:'var(--hify-orange)'},{l:'Pi Builds',v:pis.length,e:'🖥️',c:'#7C6EFF'},{l:'Low Stock',v:lowStock,e:'⚠️',c:'#F5A623'},{l:'Out of Stock',v:outOfStock,e:'🚫',c:'var(--hify-pink)'}].map(s=>(
-                <div key={s.l} className="card p-4">
-                  <div className="text-2xl mb-2">{s.e}</div>
-                  <div className="font-display font-bold text-2xl" style={{color:s.c}}>{loading?'—':s.v}</div>
-                  <div className="text-xs mt-0.5" style={{color:'var(--hify-muted)'}}>{s.l}</div>
+              {/* Stat cards */}
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+                {[
+                  {l:'In Office',    v:totalUnits,  icon:'📦', c:'var(--hify-orange)', bg:'rgba(255,107,53,0.1)'},
+                  {l:'Pi Builds',    v:pis.length,   icon:'🖥️', c:'var(--hify-purple)', bg:'rgba(167,139,250,0.1)'},
+                  {l:'Low Stock',    v:lowStock,     icon:'⚠️', c:'var(--hify-yellow)', bg:'rgba(251,191,36,0.1)'},
+                  {l:'Out of Stock', v:outOfStock,   icon:'🚫', c:'var(--hify-pink)',   bg:'rgba(255,61,110,0.1)'},
+                ].map(s=>(
+                  <div key={s.l} className="card" style={{padding:16}}>
+                    <div style={{width:42,height:42,borderRadius:13,background:s.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,marginBottom:12}}>{s.icon}</div>
+                    <div className="font-display" style={{fontWeight:700,fontSize:30,color:s.c,lineHeight:1}}>{loading?'—':s.v}</div>
+                    <div style={{fontSize:12,color:'var(--hify-muted)',marginTop:5}}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Quick actions */}
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+                <button onClick={()=>{setEditingInventory(null);setShowInventoryModal(true);setTab('inventory');}}
+                  className="card" style={{padding:16,textAlign:'left',border:'1px solid var(--hify-border)',cursor:'pointer',transition:'opacity 0.15s'}}
+                  onMouseDown={e=>(e.currentTarget.style.opacity='0.7')} onMouseUp={e=>(e.currentTarget.style.opacity='1')} onMouseLeave={e=>(e.currentTarget.style.opacity='1')}>
+                  <div style={{...S.iconBtn('var(--hify-orange)','rgba(255,107,53,0.12)'),marginBottom:10}}><I.Plus/></div>
+                  <p style={{fontWeight:600,fontSize:14,color:'white',margin:0}}>Add Asset</p>
+                  <p style={{fontSize:12,color:'var(--hify-muted)',margin:'3px 0 0'}}>New inventory item</p>
+                </button>
+                <button onClick={()=>{setEditingPi(null);setShowPiModal(true);setTab('pis');}}
+                  className="card" style={{padding:16,textAlign:'left',border:'1px solid var(--hify-border)',cursor:'pointer',transition:'opacity 0.15s'}}
+                  onMouseDown={e=>(e.currentTarget.style.opacity='0.7')} onMouseUp={e=>(e.currentTarget.style.opacity='1')} onMouseLeave={e=>(e.currentTarget.style.opacity='1')}>
+                  <div style={{...S.iconBtn('var(--hify-purple)','rgba(167,139,250,0.12)'),marginBottom:10}}><I.Cpu/></div>
+                  <p style={{fontWeight:600,fontSize:14,color:'white',margin:0}}>New Pi Build</p>
+                  <p style={{fontSize:12,color:'var(--hify-muted)',margin:'3px 0 0'}}>Configure a Pi</p>
+                </button>
+              </div>
+
+              {/* Recent activity */}
+              <div className="card" style={{overflow:'hidden'}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderBottom:'1px solid var(--hify-border)'}}>
+                  <span className="font-display" style={{fontWeight:600,fontSize:14,color:'white'}}>Recent Activity</span>
+                  <button onClick={()=>setTab('logs')} style={{fontSize:12,fontWeight:600,color:'var(--hify-orange)',background:'none',border:'none',cursor:'pointer'}}>See all →</button>
+                </div>
+                {loading ? (
+                  <div style={{padding:16,display:'flex',flexDirection:'column',gap:10}}>
+                    {[1,2,3].map(i=><div key={i} className="skeleton" style={{height:44}}/>)}
+                  </div>
+                ) : logs.length===0 ? (
+                  <div style={{padding:'32px 0',textAlign:'center',color:'var(--hify-muted)',fontSize:13}}>No activity yet</div>
+                ) : logs.slice(0,5).map((log,i)=>(
+                  <div key={log.id} style={{display:'flex',alignItems:'flex-start',gap:12,padding:'11px 16px',borderBottom:i<Math.min(logs.length,5)-1?'1px solid var(--hify-border)':'none'}}>
+                    <span className={`badge ${actionColor(log.action_type)}`} style={{marginTop:1,flexShrink:0}}>{actionLabel(log.action_type)}</span>
+                    <div style={{minWidth:0,flex:1}}>
+                      <p style={{fontSize:13,fontWeight:500,color:'white',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{log.pi_name||log.component?.asset||log.notes||'—'}</p>
+                      <p style={{fontSize:11,color:'var(--hify-muted)',margin:'2px 0 0'}}>{new Date(log.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* INVENTORY */}
+          {tab==='inventory' && (
+            <div className="slide-up" style={{display:'flex',flexDirection:'column',gap:12}}>
+              <div style={{display:'flex',gap:10}}>
+                <div className="hify-input" style={{flex:1,display:'flex',alignItems:'center',gap:8,padding:'0 14px',height:44}}>
+                  <span style={{color:'var(--hify-muted)',flexShrink:0}}><I.Search/></span>
+                  <input style={{flex:1,fontSize:14,background:'transparent',border:'none',outline:'none',color:'var(--hify-text)'}} placeholder="Search assets…" value={search} onChange={e=>setSearch(e.target.value)}/>
+                </div>
+                <button onClick={()=>{setEditingInventory(null);setShowInventoryModal(true);}} className="btn-primary" style={{width:44,height:44,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><I.Plus/></button>
+              </div>
+
+              {loading ? (
+                <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                  {[1,2,3,4].map(i=><div key={i} className="skeleton" style={{height:82}}/>)}
+                </div>
+              ) : filteredInventory.length===0 ? (
+                <div style={{display:'flex',flexDirection:'column',alignItems:'center',paddingTop:80,gap:10,color:'var(--hify-muted)'}}>
+                  <div style={{fontSize:48}}>📦</div>
+                  <p style={{fontSize:15,fontWeight:500,margin:0}}>No assets found</p>
+                </div>
+              ) : filteredInventory.map(item=>(
+                <div key={item.id} className="card" style={{padding:16}}>
+                  <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:8,marginBottom:12}}>
+                    <div style={{minWidth:0}}>
+                      <p style={{fontWeight:600,fontSize:14,color:'white',margin:0,lineHeight:1.35}}>{item.asset}</p>
+                      <p style={{fontSize:12,color:'var(--hify-muted)',margin:'4px 0 0'}}>{[item.brand,item.vendor].filter(Boolean).join(' · ')}</p>
+                    </div>
+                    <span className={`badge ${item.qty_in_office===0?'badge-red':item.qty_in_office<=3?'badge-orange':'badge-green'}`} style={{flexShrink:0}}>{item.qty_in_office} in office</span>
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                    <div style={{display:'flex',gap:16,fontSize:12,color:'var(--hify-muted)'}}>
+                      <span>Purchased: <strong style={{color:'white',fontWeight:600}}>{item.total_qty_purchased||'—'}</strong></span>
+                      <span>Out: <strong style={{color:'white',fontWeight:600}}>{item.qty_out||0}</strong></span>
+                    </div>
+                    <div style={{display:'flex',gap:6}}>
+                      <button onClick={()=>{setEditingInventory(item);setShowInventoryModal(true);}} style={S.iconBtn('var(--hify-orange)','rgba(255,107,53,0.12)')}><I.Edit/></button>
+                      <button onClick={()=>deleteInventory(item)} style={S.iconBtn('var(--hify-pink)','rgba(255,61,110,0.12)')}><I.Trash/></button>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="card p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-display font-semibold text-sm">Recent Activity</h3>
-                <button onClick={()=>setTab('logs')} className="text-xs" style={{color:'var(--hify-orange)'}}>See all →</button>
+          )}
+
+          {/* PI BUILDS */}
+          {tab==='pis' && (
+            <div className="slide-up" style={{display:'flex',flexDirection:'column',gap:12}}>
+              <div style={{display:'flex',gap:10}}>
+                <div className="hify-input" style={{flex:1,display:'flex',alignItems:'center',gap:8,padding:'0 14px',height:44}}>
+                  <span style={{color:'var(--hify-muted)',flexShrink:0}}><I.Search/></span>
+                  <input style={{flex:1,fontSize:14,background:'transparent',border:'none',outline:'none',color:'var(--hify-text)'}} placeholder="Search Pi builds…" value={search} onChange={e=>setSearch(e.target.value)}/>
+                </div>
+                <button onClick={()=>{setEditingPi(null);setShowPiModal(true);}} className="btn-primary" style={{width:44,height:44,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><I.Plus/></button>
               </div>
-              {loading ? [1,2,3].map(i=><div key={i} className="h-12 rounded-lg mb-2" style={{background:'rgba(0,0,0,0.05)'}}/>) :
-                logs.slice(0,5).map(log=>(
-                <div key={log.id} className="flex items-start gap-3 py-2.5 border-b last:border-0" style={{borderColor:'var(--hify-border)'}}>
-                  <span className={`badge ${actionColor(log.action_type)} mt-0.5 shrink-0`}>{actionLabel(log.action_type)}</span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">{log.pi_name||log.component?.asset||log.notes||'—'}</p>
-                    <p className="text-xs" style={{color:'var(--hify-muted)'}}>{new Date(log.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</p>
+
+              {loading ? (
+                <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                  {[1,2,3].map(i=><div key={i} className="skeleton" style={{height:130}}/>)}
+                </div>
+              ) : filteredPis.length===0 ? (
+                <div style={{display:'flex',flexDirection:'column',alignItems:'center',paddingTop:80,gap:10,color:'var(--hify-muted)'}}>
+                  <div style={{fontSize:48}}>🖥️</div>
+                  <p style={{fontSize:15,fontWeight:500,margin:0}}>No Pi builds yet</p>
+                </div>
+              ) : filteredPis.map(pi=>{
+                const comps = pi.pi_components||[];
+                const statusCls = pi.status==='deployed'?'badge-green':pi.status==='faulty'?'badge-red':'badge-orange';
+                return (
+                  <div key={pi.id} className="card" style={{padding:16}}>
+                    <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:10}}>
+                      <div style={{minWidth:0}}>
+                        <p className="font-display" style={{fontWeight:700,fontSize:16,color:'white',margin:0}}>{pi.label}</p>
+                        <p style={{fontSize:12,color:'var(--hify-muted)',margin:'3px 0 0'}}>{pi.serial_number}</p>
+                      </div>
+                      <span className={`badge ${statusCls}`}>{pi.status.replace(/_/g,' ')}</span>
+                    </div>
+                    {comps.length>0 && (
+                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6,marginBottom:10}}>
+                        {comps.map(c=>(
+                          <div key={c.id} style={{padding:'6px 10px',borderRadius:10,background:'var(--hify-surface2)',fontSize:12}}>
+                            <span style={{color:'var(--hify-muted)'}}>{c.notes||'Part'}: </span>
+                            <span style={{fontWeight:500,color:'white'}}>{c.component?.asset?.split(' ').slice(0,3).join(' ')}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {pi.notes && <p style={{fontSize:12,color:'var(--hify-muted)',fontStyle:'italic',margin:'0 0 10px'}}>{pi.notes}</p>}
+                    <div style={{display:'flex',gap:8}}>
+                      <button onClick={()=>{setEditingPi(pi);setShowPiModal(true);}}
+                        style={{flex:1,height:36,borderRadius:10,background:'rgba(255,107,53,0.12)',color:'var(--hify-orange)',display:'flex',alignItems:'center',justifyContent:'center',gap:6,fontSize:13,fontWeight:600,border:'none',cursor:'pointer'}}>
+                        <I.Edit/> Edit
+                      </button>
+                      <button onClick={()=>generateQR(pi)} style={S.iconBtn('var(--hify-purple)','rgba(167,139,250,0.12)')}><I.Qr/></button>
+                      <button onClick={()=>deletePi(pi)} style={S.iconBtn('var(--hify-pink)','rgba(255,61,110,0.12)')}><I.Trash/></button>
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* LOGS */}
+          {tab==='logs' && (
+            <div className="slide-up" style={{display:'flex',flexDirection:'column',gap:8}}>
+              <p style={{fontSize:12,color:'var(--hify-muted)',margin:'0 0 4px 2px'}}>{logs.length} transactions</p>
+              {loading ? (
+                <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                  {[1,2,3,4,5].map(i=><div key={i} className="skeleton" style={{height:66}}/>)}
+                </div>
+              ) : logs.length===0 ? (
+                <div style={{display:'flex',flexDirection:'column',alignItems:'center',paddingTop:80,gap:10,color:'var(--hify-muted)'}}>
+                  <div style={{fontSize:48}}>📋</div>
+                  <p style={{fontSize:15,fontWeight:500,margin:0}}>No transactions yet</p>
+                </div>
+              ) : logs.map(log=>(
+                <div key={log.id} className="card" style={{padding:'12px 14px',display:'flex',alignItems:'flex-start',gap:12}}>
+                  <span className={`badge ${actionColor(log.action_type)}`} style={{marginTop:2,flexShrink:0}}>{actionLabel(log.action_type)}</span>
+                  <div style={{minWidth:0,flex:1}}>
+                    <p style={{fontSize:13,fontWeight:500,color:'white',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{log.pi_name||log.component?.asset||log.notes||'—'}</p>
+                    {log.notes && <p style={{fontSize:12,color:'var(--hify-muted)',margin:'2px 0 0',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{log.notes}</p>}
+                    <p style={{fontSize:11,color:'var(--hify-muted)',margin:'3px 0 0'}}>{new Date(log.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</p>
+                  </div>
+                  {log.quantity>0 && <span style={{fontSize:13,fontWeight:700,color:'var(--hify-orange)',flexShrink:0}}>×{log.quantity}</span>}
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={()=>{setEditingInventory(null);setShowInventoryModal(true);setTab('inventory');}} className="card p-4 text-left">
-                <div className="text-xl mb-2">➕</div>
-                <p className="font-semibold text-sm">Add Asset</p>
-                <p className="text-xs mt-0.5" style={{color:'var(--hify-muted)'}}>New inventory item</p>
-              </button>
-              <button onClick={()=>{setEditingPi(null);setShowPiModal(true);setTab('pis');}} className="card p-4 text-left">
-                <div className="text-xl mb-2">🖥️</div>
-                <p className="font-semibold text-sm">New Pi Build</p>
-                <p className="text-xs mt-0.5" style={{color:'var(--hify-muted)'}}>Configure a Pi</p>
-              </button>
-            </div>
-          </div>
-        )}
+          )}
 
-        {/* ── INVENTORY ── */}
-        {tab==='inventory' && (
-          <div className="slide-up space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="flex-1 flex items-center gap-2 hify-input px-3 py-2.5">
-                <I.Search/><input className="bg-transparent flex-1 text-sm outline-none" placeholder="Search assets..." value={search} onChange={e=>setSearch(e.target.value)} style={{color:'var(--hify-text)'}}/>
-              </div>
-              <button onClick={()=>{setEditingInventory(null);setShowInventoryModal(true);}} className="btn-primary p-2.5 shrink-0"><I.Plus/></button>
-            </div>
-            {loading ? [1,2,3,4].map(i=><div key={i} className="h-20 card" style={{animation:'pulse 1.5s infinite'}}/>) :
-            filteredInventory.length===0 ? <div className="text-center py-16" style={{color:'var(--hify-muted)'}}><div className="text-4xl mb-3">📦</div><p>No assets found</p></div> :
-            filteredInventory.map(item=>(
-              <div key={item.id} className="card p-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="min-w-0">
-                    <p className="font-semibold text-sm leading-tight">{item.asset}</p>
-                    <p className="text-xs mt-0.5" style={{color:'var(--hify-muted)'}}>{item.brand}{item.vendor?` · ${item.vendor}`:''}</p>
-                  </div>
-                  <div className={`badge shrink-0 ${item.qty_in_office===0?'badge-red':item.qty_in_office<=3?'badge-orange':'badge-green'}`}>{item.qty_in_office} in office</div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-3 text-xs" style={{color:'var(--hify-muted)'}}>
-                    <span>Purchased: {item.total_qty_purchased||'—'}</span>
-                    <span>Out: {item.qty_out||0}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={()=>{setEditingInventory(item);setShowInventoryModal(true);}} className="p-1.5 rounded-lg" style={{background:'rgba(255,107,43,0.15)',color:'var(--hify-orange)'}}><I.Edit/></button>
-                    <button onClick={()=>deleteInventory(item)} className="p-1.5 rounded-lg" style={{background:'rgba(255,61,110,0.15)',color:'var(--hify-pink)'}}><I.Trash/></button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        </main>
 
-        {/* ── PI BUILDS ── */}
-        {tab==='pis' && (
-          <div className="slide-up space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="flex-1 flex items-center gap-2 hify-input px-3 py-2.5">
-                <I.Search/><input className="bg-transparent flex-1 text-sm outline-none" placeholder="Search Pi builds..." value={search} onChange={e=>setSearch(e.target.value)} style={{color:'var(--hify-text)'}}/>
-              </div>
-              <button onClick={()=>{setEditingPi(null);setShowPiModal(true);}} className="btn-primary p-2.5 shrink-0"><I.Plus/></button>
-            </div>
-            {loading ? [1,2,3].map(i=><div key={i} className="h-32 card" style={{animation:'pulse 1.5s infinite'}}/>) :
-            filteredPis.length===0 ? <div className="text-center py-16" style={{color:'var(--hify-muted)'}}><div className="text-4xl mb-3">🖥️</div><p>No Pi builds yet</p></div> :
-            filteredPis.map(pi=>{
-              const comps = pi.pi_components||[];
+        {/* ── BOTTOM NAV — flex item, always at bottom of container ── */}
+        <nav style={{
+          flexShrink:0,
+          background:'var(--hify-surface)',
+          borderTop:'1px solid var(--hify-border)',
+          paddingBottom:'env(safe-area-inset-bottom, 4px)',
+        }}>
+          <div style={{display:'flex'}}>
+            {navItems.map(({id,l,Icon})=>{
+              const active = tab===id;
               return (
-                <div key={pi.id} className="card p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <p className="font-display font-semibold">{pi.label}</p>
-                      <p className="text-xs mt-0.5" style={{color:'var(--hify-muted)'}}>{pi.serial_number} · <span className={`badge inline ${pi.status==='deployed'?'badge-green':'badge-orange'}`}>{pi.status}</span></p>
-                    </div>
-                    <button onClick={()=>generateQR(pi)} className="p-2 rounded-xl" style={{background:'rgba(124,110,255,0.15)',color:'#7C6EFF'}}><I.Qr/></button>
-                  </div>
-                  {comps.length>0 && (
-                    <div className="grid grid-cols-2 gap-1.5 mb-3">
-                      {comps.map(c=>(
-                        <div key={c.id} className="px-2.5 py-1.5 rounded-lg text-xs" style={{background:'rgba(0,0,0,0.05)'}}>
-                          <span style={{color:'var(--hify-muted)'}}>{c.notes||'Part'}: </span>
-                          <span className="font-medium">{c.component?.asset?.split(' ').slice(0,3).join(' ')}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {pi.notes && <p className="text-xs mb-3 italic" style={{color:'var(--hify-muted)'}}>{pi.notes}</p>}
-                  <div className="flex gap-2">
-                    <button onClick={()=>{setEditingPi(pi);setShowPiModal(true);}} className="flex-1 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5" style={{background:'rgba(255,107,43,0.15)',color:'var(--hify-orange)'}}><I.Edit/> Edit</button>
-                    <button onClick={()=>deletePi(pi)} className="py-2 px-3 rounded-xl" style={{background:'rgba(255,61,110,0.15)',color:'var(--hify-pink)'}}><I.Trash/></button>
-                  </div>
-                </div>
+                <button key={id} onClick={()=>{setTab(id);setSearch('');}} style={{
+                  flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:4,
+                  paddingTop:12, paddingBottom:10,
+                  color:active?'var(--hify-orange)':'var(--hify-muted)',
+                  background:'transparent', border:'none', cursor:'pointer',
+                }}>
+                  <Icon/>
+                  <span style={{fontSize:11,fontWeight:active?600:400,letterSpacing:'0.01em'}}>{l}</span>
+                  <div style={{width:4,height:4,borderRadius:'50%',background:active?'var(--hify-orange)':'transparent'}}/>
+                </button>
               );
             })}
           </div>
-        )}
+        </nav>
 
-        {/* ── LOGS ── */}
-        {tab==='logs' && (
-          <div className="slide-up space-y-3">
-            <p className="text-xs" style={{color:'var(--hify-muted)'}}>{logs.length} recent transactions</p>
-            {loading ? [1,2,3,4,5].map(i=><div key={i} className="h-16 card" style={{animation:'pulse 1.5s infinite'}}/>) :
-            logs.length===0 ? <div className="text-center py-16" style={{color:'var(--hify-muted)'}}><div className="text-4xl mb-3">📋</div><p>No transactions yet</p></div> :
-            logs.map(log=>(
-              <div key={log.id} className="card p-3.5 flex items-start gap-3">
-                <span className={`badge ${actionColor(log.action_type)} mt-0.5 shrink-0`}>{actionLabel(log.action_type)}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium truncate">{log.pi_name||log.component?.asset||log.notes||'—'}</p>
-                  {log.notes && <p className="text-xs truncate" style={{color:'var(--hify-muted)'}}>{log.notes}</p>}
-                  <p className="text-xs mt-1" style={{color:'var(--hify-muted)'}}>{new Date(log.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</p>
+        {/* ── MODALS ── */}
+        {showInventoryModal && <InventoryModal item={editingInventory} onSave={saveInventory} onClose={()=>{setShowInventoryModal(false);setEditingInventory(null);}}/>}
+        {showPiModal && <PiModal pi={editingPi} inventory={inventory} onSave={savePi} onClose={()=>{setShowPiModal(false);setEditingPi(null);}}/>}
+
+        {viewingPiQR && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in" style={{padding:24}}>
+            <div className="card slide-up" style={{width:'100%',maxWidth:360,padding:24}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
+                <div>
+                  <h3 className="font-display" style={{fontWeight:700,fontSize:16,color:'white',margin:0}}>{viewingPiQR.pi.label}</h3>
+                  <p style={{fontSize:12,color:'var(--hify-muted)',margin:'3px 0 0'}}>QR Code</p>
                 </div>
-                {log.quantity>0 && <span className="text-sm font-bold shrink-0" style={{color:'var(--hify-orange)'}}>×{log.quantity}</span>}
+                <button onClick={()=>setViewingPiQR(null)} style={S.iconBtn('var(--hify-muted)','var(--hify-surface2)')}><I.Close/></button>
               </div>
-            ))}
+              <div style={{background:'white',borderRadius:16,padding:16,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:16}}>
+                <img src={viewingPiQR.qr} alt="QR Code" style={{width:200,height:200}}/>
+              </div>
+              <p style={{fontSize:12,textAlign:'center',color:'var(--hify-muted)',marginBottom:16}}>Print and attach to this Pi for tracking</p>
+              <a href={viewingPiQR.qr} download={`${viewingPiQR.pi.label}-qr.png`} className="btn-primary"
+                style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,padding:'13px 0',fontSize:14,textDecoration:'none'}}>
+                <I.Download/> Download QR
+              </a>
+            </div>
           </div>
         )}
-        </main>
+
       </div>
-
-      {/* Mobile bottom nav — hidden on desktop */}
-      <nav className="bottom-nav md:hidden fixed bottom-0 left-0 right-0 px-2 pb-6 pt-2">
-        <div className="flex">
-          {navItems.map(({id,l,Icon})=>(
-            <button key={id} onClick={()=>{setTab(id);setSearch('');}} className="flex-1 flex flex-col items-center gap-1 py-2 text-xs font-medium" style={{color:tab===id?'var(--hify-orange)':'var(--hify-muted)'}}>
-              <Icon/>{l}
-              {tab===id && <div className="w-1 h-1 rounded-full" style={{background:'var(--hify-orange)'}}/>}
-            </button>
-          ))}
-        </div>
-      </nav>
-
-      {showInventoryModal && <InventoryModal item={editingInventory} onSave={saveInventory} onClose={()=>{setShowInventoryModal(false);setEditingInventory(null);}}/>}
-      {showPiModal && <PiModal pi={editingPi} inventory={inventory} onSave={savePi} onClose={()=>{setShowPiModal(false);setEditingPi(null);}}/>}
-
-      {viewingPiQR && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in px-6">
-          <div className="card p-6 w-full max-w-sm slide-up">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-display font-semibold">{viewingPiQR.pi.label}</h3>
-              <button onClick={()=>setViewingPiQR(null)} className="p-1 rounded-full" style={{background:'rgba(0,0,0,0.07)'}}><I.Close/></button>
-            </div>
-            <div className="bg-white rounded-2xl p-4 flex items-center justify-center mb-4">
-              <img src={viewingPiQR.qr} alt="QR Code" className="w-56 h-56"/>
-            </div>
-            <p className="text-xs text-center mb-4" style={{color:'var(--hify-muted)'}}>Print and attach to this Pi for tracking</p>
-            <a href={viewingPiQR.qr} download={`${viewingPiQR.pi.label}-qr.png`} className="btn-primary flex items-center justify-center gap-2 py-3 w-full text-sm"><I.Download/> Download QR</a>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
-// ─── Inventory Modal ──────────────────────────────────────────────────────────
+// ─── Inventory Modal ───────────────────────────────────────────────────────────
 function InventoryModal({item,onSave,onClose}: {item:Component|null;onSave:(d:any)=>void;onClose:()=>void}) {
   const [form,setForm] = useState({
     asset:item?.asset||'', brand:item?.brand||'', vendor:item?.vendor||'',
@@ -393,46 +483,53 @@ function InventoryModal({item,onSave,onClose}: {item:Component|null;onSave:(d:an
   const [saving,setSaving] = useState(false);
   const set = (k:string,v:any) => setForm(f=>({...f,[k]:v}));
   const handleSave = async () => { if(!form.asset) return; setSaving(true); await onSave(form); setSaving(false); };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center modal-backdrop fade-in md:px-4">
-      <div className="w-full max-w-lg card rounded-t-3xl md:rounded-3xl p-5 pb-10 slide-up" style={{maxHeight:'90vh',overflowY:'auto'}}>
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-display font-semibold text-lg">{item?'Edit Asset':'Add Asset'}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-full" style={{background:'rgba(0,0,0,0.07)'}}><I.Close/></button>
+    <div className="fixed inset-0 z-50 flex items-end modal-backdrop fade-in">
+      <div className="slide-up" style={{width:'100%',background:'var(--hify-surface)',borderRadius:'24px 24px 0 0',padding:'20px 20px',paddingBottom:'calc(28px + env(safe-area-inset-bottom, 0px))',maxHeight:'92dvh',overflowY:'auto'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
+          <h2 className="font-display" style={{fontWeight:700,fontSize:18,color:'white',margin:0}}>{item?'Edit Asset':'Add Asset'}</h2>
+          <button onClick={onClose} style={S.iconBtn('var(--hify-muted)','var(--hify-surface2)')}><I.Close/></button>
         </div>
-        <div className="space-y-3">
+        <div style={{display:'flex',flexDirection:'column',gap:14}}>
           {[{l:'Asset Name *',k:'asset',p:'e.g. Raspberry Pi 5 8GB'},{l:'Brand',k:'brand',p:'e.g. Raspberry Pi'},{l:'Vendor',k:'vendor',p:'e.g. Robu'}].map(f=>(
-            <div key={f.k}><label className="text-xs font-medium mb-1.5 block" style={{color:'var(--hify-muted)'}}>{f.l}</label>
-            <input className="hify-input w-full px-3 py-2.5 text-sm" placeholder={f.p} value={(form as any)[f.k]} onChange={e=>set(f.k,e.target.value)}/></div>
+            <div key={f.k}>
+              <label style={S.label}>{f.l}</label>
+              <input className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:14}} placeholder={f.p} value={(form as any)[f.k]} onChange={e=>set(f.k,e.target.value)}/>
+            </div>
           ))}
-          <div className="grid grid-cols-2 gap-3">
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
             {[{l:'Total Purchased',k:'total_qty_purchased'},{l:'Old Stock',k:'old_stock'},{l:'Qty In (new)',k:'qty_in_new_purchases'},{l:'Qty Out',k:'qty_out'},{l:'Returned to Vendor',k:'qty_returned_to_vendor'},{l:'In Office ✱',k:'qty_in_office'}].map(f=>(
-              <div key={f.k}><label className="text-xs font-medium mb-1.5 block" style={{color:'var(--hify-muted)'}}>{f.l}</label>
-              <input type="number" className="hify-input w-full px-3 py-2.5 text-sm" value={(form as any)[f.k]} onChange={e=>set(f.k,parseInt(e.target.value)||0)}/></div>
+              <div key={f.k}>
+                <label style={S.label}>{f.l}</label>
+                <input type="number" className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:14}} value={(form as any)[f.k]} onChange={e=>set(f.k,parseInt(e.target.value)||0)}/>
+              </div>
             ))}
           </div>
         </div>
-        <button onClick={handleSave} disabled={saving||!form.asset} className="btn-primary w-full py-3.5 mt-5 text-sm" style={{opacity:saving||!form.asset?0.6:1}}>{saving?'Saving…':(item?'Update Asset':'Add Asset')}</button>
+        <button onClick={handleSave} disabled={saving||!form.asset} className="btn-primary" style={{width:'100%',padding:'14px 0',marginTop:20,fontSize:14}}>
+          {saving?'Saving…':(item?'Update Asset':'Add Asset')}
+        </button>
       </div>
     </div>
   );
 }
 
-// ─── Pi Build Modal ───────────────────────────────────────────────────────────
+// ─── Pi Build Modal ────────────────────────────────────────────────────────────
 function PiModal({pi,inventory,onSave,onClose}: {pi:PiUnit|null;inventory:Component[];onSave:(d:any)=>void;onClose:()=>void}) {
   const existingComps = pi?.pi_components||[];
   const initSlots: Record<string,string> = {};
-  existingComps.forEach(c => { if(c.notes) initSlots[c.notes] = c.component_id; });
+  existingComps.forEach(c=>{ if(c.notes) initSlots[c.notes]=c.component_id; });
 
-  const [label,setLabel] = useState(pi?.label||'');
+  const [label,setLabel]   = useState(pi?.label||'');
   const [serial,setSerial] = useState(pi?.serial_number||'');
   const [status,setStatus] = useState(pi?.status||'in_office');
-  const [notes,setNotes] = useState(pi?.notes||'');
-  const [slots,setSlots] = useState<Record<string,string>>(initSlots);
+  const [notes,setNotes]   = useState(pi?.notes||'');
+  const [slots,setSlots]   = useState<Record<string,string>>(initSlots);
   const [saving,setSaving] = useState(false);
 
-  const setSlot = (role: string, componentId: string) => setSlots(s=>({...s,[role]:componentId}));
-  const getOptionsForRole = (role: ComponentRole) => inventory.filter(i=>detectRole(i.asset)===role);
+  const setSlot = (role:string, componentId:string) => setSlots(s=>({...s,[role]:componentId}));
+  const getOptionsForRole = (role:ComponentRole) => inventory.filter(i=>detectRole(i.asset)===role);
 
   const handleSave = async () => {
     if(!label) return;
@@ -443,45 +540,55 @@ function PiModal({pi,inventory,onSave,onClose}: {pi:PiUnit|null;inventory:Compon
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center modal-backdrop fade-in md:px-4">
-      <div className="w-full max-w-lg card rounded-t-3xl md:rounded-3xl p-5 pb-10 slide-up" style={{maxHeight:'92vh',overflowY:'auto'}}>
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-display font-semibold text-lg">{pi?'Edit Pi Build':'New Pi Build'}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-full" style={{background:'rgba(0,0,0,0.07)'}}><I.Close/></button>
+    <div className="fixed inset-0 z-50 flex items-end modal-backdrop fade-in">
+      <div className="slide-up" style={{width:'100%',background:'var(--hify-surface)',borderRadius:'24px 24px 0 0',padding:'20px 20px',paddingBottom:'calc(28px + env(safe-area-inset-bottom, 0px))',maxHeight:'94dvh',overflowY:'auto'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
+          <h2 className="font-display" style={{fontWeight:700,fontSize:18,color:'white',margin:0}}>{pi?'Edit Pi Build':'New Pi Build'}</h2>
+          <button onClick={onClose} style={S.iconBtn('var(--hify-muted)','var(--hify-surface2)')}><I.Close/></button>
         </div>
-        <div className="space-y-3">
-          <div><label className="text-xs font-medium mb-1.5 block" style={{color:'var(--hify-muted)'}}>Pi Label *</label>
-          <input className="hify-input w-full px-3 py-2.5 text-sm" placeholder="e.g. Pi-Alpha-01" value={label} onChange={e=>setLabel(e.target.value)}/></div>
-          <div><label className="text-xs font-medium mb-1.5 block" style={{color:'var(--hify-muted)'}}>Serial Number</label>
-          <input className="hify-input w-full px-3 py-2.5 text-sm" placeholder="auto-generated if blank" value={serial} onChange={e=>setSerial(e.target.value)}/></div>
-          <div><label className="text-xs font-medium mb-1.5 block" style={{color:'var(--hify-muted)'}}>Status</label>
-          <select className="hify-input w-full px-3 py-2.5 text-sm" value={status} onChange={e=>setStatus(e.target.value)} style={{appearance:'auto'}}>
-            <option value="in_office">In Office</option>
-            <option value="deployed">Deployed</option>
-            <option value="faulty">Faulty</option>
-            <option value="returned">Returned</option>
-          </select></div>
-
-          <div className="rounded-xl p-3 space-y-3" style={{background:'rgba(255,107,43,0.05)',border:'1px solid rgba(255,107,43,0.15)'}}>
-            <p className="text-xs font-semibold" style={{color:'var(--hify-orange)'}}>🔧 Assembled Components</p>
-            {COMPONENT_ROLES.map(role=>{
-              const opts = getOptionsForRole(role);
-              return (
-                <div key={role}>
-                  <label className="text-xs font-medium mb-1.5 block" style={{color:'var(--hify-muted)'}}>{ROLE_LABELS[role]}</label>
-                  <select className="hify-input w-full px-3 py-2.5 text-sm" value={slots[role]||''} onChange={e=>setSlot(role,e.target.value)} style={{appearance:'auto'}}>
-                    <option value="">— None —</option>
-                    {opts.map(o=><option key={o.id} value={o.id}>{o.asset} ({o.qty_in_office} in office)</option>)}
-                  </select>
-                </div>
-              );
-            })}
+        <div style={{display:'flex',flexDirection:'column',gap:14}}>
+          <div>
+            <label style={S.label}>Pi Label *</label>
+            <input className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:14}} placeholder="e.g. Pi-Alpha-01" value={label} onChange={e=>setLabel(e.target.value)}/>
           </div>
-
-          <div><label className="text-xs font-medium mb-1.5 block" style={{color:'var(--hify-muted)'}}>Notes</label>
-          <textarea className="hify-input w-full px-3 py-2.5 text-sm resize-none" rows={2} value={notes} onChange={e=>setNotes(e.target.value)}/></div>
+          <div>
+            <label style={S.label}>Serial Number</label>
+            <input className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:14}} placeholder="auto-generated if blank" value={serial} onChange={e=>setSerial(e.target.value)}/>
+          </div>
+          <div>
+            <label style={S.label}>Status</label>
+            <select className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:14,appearance:'auto'}} value={status} onChange={e=>setStatus(e.target.value)}>
+              <option value="in_office">In Office</option>
+              <option value="deployed">Deployed</option>
+              <option value="faulty">Faulty</option>
+              <option value="returned">Returned</option>
+            </select>
+          </div>
+          <div style={{background:'rgba(255,107,53,0.06)',border:'1px solid rgba(255,107,53,0.15)',borderRadius:14,padding:'14px 14px 10px'}}>
+            <p style={{fontSize:12,fontWeight:600,color:'var(--hify-orange)',margin:'0 0 12px'}}>🔧 Assembled Components</p>
+            <div style={{display:'flex',flexDirection:'column',gap:10}}>
+              {COMPONENT_ROLES.map(role=>{
+                const opts = getOptionsForRole(role);
+                return (
+                  <div key={role}>
+                    <label style={S.label}>{ROLE_LABELS[role]}</label>
+                    <select className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:13,appearance:'auto'}} value={slots[role]||''} onChange={e=>setSlot(role,e.target.value)}>
+                      <option value="">— None —</option>
+                      {opts.map(o=><option key={o.id} value={o.id}>{o.asset} ({o.qty_in_office} in office)</option>)}
+                    </select>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <label style={S.label}>Notes</label>
+            <textarea className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:14,resize:'none'}} rows={2} value={notes} onChange={e=>setNotes(e.target.value)}/>
+          </div>
         </div>
-        <button onClick={handleSave} disabled={saving||!label} className="btn-primary w-full py-3.5 mt-5 text-sm" style={{opacity:saving||!label?0.6:1}}>{saving?'Saving…':(pi?'Update Pi Build':'Create Pi Build')}</button>
+        <button onClick={handleSave} disabled={saving||!label} className="btn-primary" style={{width:'100%',padding:'14px 0',marginTop:20,fontSize:14}}>
+          {saving?'Saving…':(pi?'Update Pi Build':'Create Pi Build')}
+        </button>
       </div>
     </div>
   );
