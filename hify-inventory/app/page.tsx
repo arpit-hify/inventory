@@ -15,7 +15,9 @@ interface Component {
 }
 interface PiUnit {
   id: string; serial_number: string; label: string; status: string;
-  notes: string|null; qr_code: string|null; created_at: string; updated_at: string;
+  location: string|null; notes: string|null; qr_code: string|null;
+  extra_components: string[];
+  created_at: string; updated_at: string;
   pi_components?: Array<{id:string;component_id:string;notes:string|null;component:Component}>;
 }
 interface Log {
@@ -382,6 +384,7 @@ export default function Home() {
                       <div style={{minWidth:0}}>
                         <p className="font-display" style={{fontWeight:700,fontSize:16,color:'white',margin:0}}>{pi.label}</p>
                         <p style={{fontSize:12,color:'var(--hify-muted)',margin:'3px 0 0'}}>{pi.serial_number}</p>
+                        {pi.location && <p style={{fontSize:12,color:'var(--hify-orange)',margin:'3px 0 0'}}>📍 {pi.location}</p>}
                       </div>
                       <span className={`badge ${statusBadge(pi.status)}`}>{pi.status.replace(/_/g,' ')}</span>
                     </div>
@@ -510,30 +513,43 @@ function PiDetailModal({ pi, onClose, onEdit, onGenerateQR }: {
   return (
     <div className="fixed inset-0 z-50 flex items-end modal-backdrop fade-in">
       <div className="slide-up" style={S.sheetWrap}>
-        <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:20}}>
-          <div>
+        <div style={{display:'flex',alignItems:'flex-start',gap:12,marginBottom:20}}>
+          <div style={{flex:1,minWidth:0}}>
             <h2 className="font-display" style={{fontWeight:700,fontSize:20,color:'white',margin:0}}>{pi.label}</h2>
             <p style={{fontSize:12,color:'var(--hify-muted)',margin:'4px 0 0'}}>{pi.serial_number}</p>
+            {pi.location && <p style={{fontSize:12,color:'var(--hify-orange)',margin:'4px 0 0'}}>📍 {pi.location}</p>}
             <span className={`badge ${statusBadge(pi.status)}`} style={{marginTop:8,display:'inline-flex'}}>{pi.status.replace(/_/g,' ')}</span>
           </div>
-          <button onClick={onClose} style={S.iconBtn('var(--hify-muted)','var(--hify-surface2)')}><I.Close/></button>
+          <button onClick={onClose} style={{...S.iconBtn('var(--hify-muted)','var(--hify-surface2)'),flexShrink:0}}><I.Close/></button>
         </div>
 
-        {/* Components */}
+        {/* Inventory components */}
         <div style={{marginBottom:16}}>
-          <p style={{fontSize:12,fontWeight:600,color:'var(--hify-muted)',margin:'0 0 10px',textTransform:'uppercase',letterSpacing:'0.06em'}}>Components</p>
+          <p style={{fontSize:12,fontWeight:600,color:'var(--hify-muted)',margin:'0 0 10px',textTransform:'uppercase',letterSpacing:'0.06em'}}>Inventory Components</p>
           {comps.length===0 ? (
             <p style={{fontSize:14,color:'var(--hify-muted)',textAlign:'center',padding:'20px 0'}}>No components recorded</p>
           ) : comps.map(c=>(
             <div key={c.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 14px',borderRadius:12,background:'var(--hify-surface2)',marginBottom:8}}>
-              <div>
-                <p style={{fontWeight:600,fontSize:14,color:'white',margin:0}}>{c.component?.asset||'Unknown'}</p>
+              <div style={{minWidth:0,flex:1}}>
+                <p style={{fontWeight:600,fontSize:14,color:'white',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.component?.asset||'Unknown'}</p>
                 <p style={{fontSize:12,color:'var(--hify-muted)',margin:'2px 0 0'}}>{c.component?.brand||'—'}</p>
               </div>
-              <span style={{fontSize:11,fontWeight:600,color:'var(--hify-orange)',background:'rgba(255,107,53,0.12)',padding:'3px 10px',borderRadius:100}}>{c.notes||'Part'}</span>
+              {c.notes && <span style={{fontSize:11,fontWeight:600,color:'var(--hify-orange)',background:'rgba(255,107,53,0.12)',padding:'3px 10px',borderRadius:100,flexShrink:0,marginLeft:8}}>{c.notes}</span>}
             </div>
           ))}
         </div>
+
+        {/* Extra components */}
+        {(pi.extra_components||[]).length>0 && (
+          <div style={{marginBottom:16}}>
+            <p style={{fontSize:12,fontWeight:600,color:'var(--hify-muted)',margin:'0 0 10px',textTransform:'uppercase',letterSpacing:'0.06em'}}>Additional Components</p>
+            {(pi.extra_components||[]).map((e,i)=>(
+              <div key={i} style={{padding:'10px 14px',borderRadius:12,background:'var(--hify-surface2)',marginBottom:6}}>
+                <p style={{fontSize:13,color:'white',margin:0}}>{e}</p>
+              </div>
+            ))}
+          </div>
+        )}
 
         {pi.notes && (
           <div style={{padding:'10px 14px',borderRadius:12,background:'var(--hify-surface2)',marginBottom:16}}>
@@ -726,47 +742,63 @@ function PiModal({pi,inventory,onSave,onClose}: {pi:PiUnit|null;inventory:Compon
   const initSlots: Record<string,string> = {};
   existingComps.forEach(c=>{ if(c.notes) initSlots[c.notes]=c.component_id; });
 
-  const [label,  setLabel]  = useState(pi?.label||'');
-  const [serial, setSerial] = useState(pi?.serial_number||'');
-  const [status, setStatus] = useState(pi?.status||'in_office');
-  const [notes,  setNotes]  = useState(pi?.notes||'');
-  const [slots,  setSlots]  = useState<Record<string,string>>(initSlots);
-  const [saving, setSaving] = useState(false);
+  const [label,   setLabel]   = useState(pi?.label||'');
+  const [serial,  setSerial]  = useState(pi?.serial_number||'');
+  const [status,  setStatus]  = useState(pi?.status||'in_office');
+  const [location,setLocation]= useState(pi?.location||'');
+  const [notes,   setNotes]   = useState(pi?.notes||'');
+  const [slots,   setSlots]   = useState<Record<string,string>>(initSlots);
+  const [extras,  setExtras]  = useState<string[]>(pi?.extra_components||[]);
+  const [saving,  setSaving]  = useState(false);
 
   const setSlot = (role: string, id: string) => setSlots(s=>({...s,[role]:id}));
+  const addExtra    = () => setExtras(e=>[...e,'']);
+  const updateExtra = (i: number, v: string) => setExtras(e=>e.map((x,idx)=>idx===i?v:x));
+  const removeExtra = (i: number) => setExtras(e=>e.filter((_,idx)=>idx!==i));
 
   const existingIds = new Set(existingComps.map(c=>c.component_id));
   const newlyAdded  = Object.values(slots).filter(id=>id&&!existingIds.has(id)).length;
   const removed     = existingComps.filter(c=>!Object.values(slots).includes(c.component_id)).length;
 
   const handleSave = async () => {
-    if (!label.trim()) return;
+    if (!label.trim() || !location.trim()) return;
     setSaving(true);
     const components = Object.entries(slots).filter(([,id])=>id).map(([role,component_id])=>({component_id,role}));
-    await onSave({label:label.trim(),serial_number:serial||`HiFy-${Date.now()}`,status,notes,components});
+    await onSave({
+      label: label.trim(), serial_number: serial||`HiFy-${Date.now()}`,
+      status, location: location.trim(), notes,
+      extra_components: extras.filter(e=>e.trim()),
+      components,
+    });
     setSaving(false);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end modal-backdrop fade-in">
-      <div className="slide-up" style={S.sheetWrap}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
-          <h2 className="font-display" style={{fontWeight:700,fontSize:18,color:'white',margin:0}}>{pi?'Edit Pi Build':'Assemble Pi'}</h2>
-          <button onClick={onClose} style={S.iconBtn('var(--hify-muted)','var(--hify-surface2)')}><I.Close/></button>
+    <div className="fixed inset-0 z-50 flex items-end modal-backdrop fade-in" style={{overflow:'hidden'}}>
+      <div className="slide-up" style={{...S.sheetWrap, width:'100%', maxWidth:'100vw'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
+          <h2 className="font-display" style={{fontWeight:700,fontSize:18,color:'white',margin:0,flex:1,minWidth:0}}>{pi?'Edit Pi Build':'Assemble Pi'}</h2>
+          <button onClick={onClose} style={{...S.iconBtn('var(--hify-muted)','var(--hify-surface2)'),flexShrink:0}}><I.Close/></button>
         </div>
         <div style={{display:'flex',flexDirection:'column',gap:14}}>
           <div>
             <label style={S.label}>Pi Label *</label>
-            <input className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:14}} placeholder="e.g. Pi-Alpha-01" value={label} onChange={e=>setLabel(e.target.value)}/>
+            <input className="hify-input" style={{width:'100%',boxSizing:'border-box',padding:'11px 14px',fontSize:14}} placeholder="e.g. Pi-Alpha-01" value={label} onChange={e=>setLabel(e.target.value)}/>
           </div>
+
+          <div>
+            <label style={S.label}>Deployment Location *</label>
+            <input className="hify-input" style={{width:'100%',boxSizing:'border-box',padding:'11px 14px',fontSize:14}} placeholder="e.g. Warehouse A, Client Site" value={location} onChange={e=>setLocation(e.target.value)}/>
+          </div>
+
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
             <div>
               <label style={S.label}>Serial Number</label>
-              <input className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:14}} placeholder="auto-generated" value={serial} onChange={e=>setSerial(e.target.value)}/>
+              <input className="hify-input" style={{width:'100%',boxSizing:'border-box',padding:'11px 14px',fontSize:14}} placeholder="auto-generated" value={serial} onChange={e=>setSerial(e.target.value)}/>
             </div>
             <div>
               <label style={S.label}>Status</label>
-              <select className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:14,appearance:'auto'}} value={status} onChange={e=>setStatus(e.target.value)}>
+              <select className="hify-input" style={{width:'100%',boxSizing:'border-box',padding:'11px 14px',fontSize:14,appearance:'auto'}} value={status} onChange={e=>setStatus(e.target.value)}>
                 <option value="in_office">In Office</option>
                 <option value="deployed">Deployed</option>
                 <option value="faulty">Faulty</option>
@@ -775,15 +807,33 @@ function PiModal({pi,inventory,onSave,onClose}: {pi:PiUnit|null;inventory:Compon
             </div>
           </div>
 
-          {/* Component slots — one per category, each with its own search */}
+          {/* Inventory component slots */}
           <div style={{background:'rgba(255,107,53,0.06)',border:'1px solid rgba(255,107,53,0.15)',borderRadius:14,padding:'14px 14px 12px',boxSizing:'border-box'}}>
-            <p style={{fontSize:12,fontWeight:600,color:'var(--hify-orange)',margin:'0 0 12px'}}>🔧 Assembled Components</p>
+            <p style={{fontSize:12,fontWeight:600,color:'var(--hify-orange)',margin:'0 0 12px'}}>🔧 Inventory Components</p>
             <div style={{display:'flex',flexDirection:'column',gap:10}}>
               {COMPONENT_ROLES.map(role=>(
                 <SlotPicker key={role} label={ROLE_LABELS[role]}
                   inventory={inventory} chosenId={slots[role]||''} onChange={id=>setSlot(role,id)}/>
               ))}
             </div>
+          </div>
+
+          {/* Additional (non-inventory) components */}
+          <div style={{background:'rgba(167,139,250,0.06)',border:'1px solid rgba(167,139,250,0.15)',borderRadius:14,padding:'14px 14px 12px',boxSizing:'border-box'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+              <p style={{fontSize:12,fontWeight:600,color:'var(--hify-purple)',margin:0}}>➕ Additional Components</p>
+              <button onClick={addExtra} style={{height:28,padding:'0 12px',borderRadius:8,background:'rgba(167,139,250,0.15)',color:'var(--hify-purple)',border:'none',cursor:'pointer',fontSize:12,fontWeight:600}}>+ Add</button>
+            </div>
+            {extras.length===0
+              ? <p style={{fontSize:12,color:'var(--hify-muted)',margin:0}}>Cables, adapters, or anything not in inventory…</p>
+              : extras.map((e,i)=>(
+                  <div key={i} style={{display:'flex',gap:8,marginBottom:8,alignItems:'center'}}>
+                    <input className="hify-input" style={{flex:1,minWidth:0,boxSizing:'border-box',padding:'9px 12px',fontSize:13}}
+                      placeholder="e.g. HDMI cable, 12V adapter…" value={e} onChange={ev=>updateExtra(i,ev.target.value)}/>
+                    <button onClick={()=>removeExtra(i)} style={{...S.iconBtn('var(--hify-pink)','rgba(255,61,110,0.12)'),flexShrink:0}}><I.Trash/></button>
+                  </div>
+                ))
+            }
           </div>
 
           {/* Stock impact summary */}
@@ -799,10 +849,10 @@ function PiModal({pi,inventory,onSave,onClose}: {pi:PiUnit|null;inventory:Compon
 
           <div>
             <label style={S.label}>Notes</label>
-            <textarea className="hify-input" style={{width:'100%',padding:'11px 14px',fontSize:14,resize:'none'}} rows={2} value={notes} onChange={e=>setNotes(e.target.value)}/>
+            <textarea className="hify-input" style={{width:'100%',boxSizing:'border-box',padding:'11px 14px',fontSize:14,resize:'none'}} rows={2} value={notes} onChange={e=>setNotes(e.target.value)}/>
           </div>
         </div>
-        <button onClick={handleSave} disabled={saving||!label.trim()} className="btn-primary" style={{width:'100%',padding:'14px 0',marginTop:20,fontSize:14}}>
+        <button onClick={handleSave} disabled={saving||!label.trim()||!location.trim()} className="btn-primary" style={{width:'100%',padding:'14px 0',marginTop:20,fontSize:14}}>
           {saving?'Saving…':(pi?'Update Pi Build':'Assemble Pi')}
         </button>
       </div>

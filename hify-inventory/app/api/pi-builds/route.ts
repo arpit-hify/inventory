@@ -20,7 +20,9 @@ export async function POST(req: NextRequest) {
     serial_number: body.serial_number || `HiFy-${Date.now()}`,
     label: body.label,
     status: body.status || 'in_office',
+    location: body.location || null,
     notes: body.notes || null,
+    extra_components: body.extra_components || [],
     qr_code: body.qr_code || null,
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -31,8 +33,6 @@ export async function POST(req: NextRequest) {
 
   if (links.length > 0) {
     await supabase.from('pi_components').insert(links);
-
-    // Deduct each component from inventory
     for (const link of links) {
       const { data: comp } = await supabase.from('components').select('qty_in_office').eq('id', link.component_id).single();
       if (comp && comp.qty_in_office > 0) {
@@ -43,9 +43,9 @@ export async function POST(req: NextRequest) {
 
   await supabase.from('stock_transactions').insert({
     type: 'out',
-    quantity: links.length,
+    quantity: links.length || 1,
     reason: 'Pi assembled',
-    notes: `Assembled Pi: ${body.label} (${links.length} components)`,
+    notes: `Assembled Pi: ${body.label}${body.location ? ` @ ${body.location}` : ''} (${links.length} components)`,
     performed_by: 'System',
     action_type: 'CREATE_PI_BUILD',
     pi_name: body.label,

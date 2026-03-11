@@ -16,7 +16,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     label: body.label,
     serial_number: body.serial_number,
     status: body.status || 'in_office',
+    location: body.location || null,
     notes: body.notes || null,
+    extra_components: body.extra_components || [],
     qr_code: body.qr_code || null,
     updated_at: new Date().toISOString(),
   }).eq('id', id);
@@ -45,9 +47,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   await supabase.from('stock_transactions').insert({
     type: 'adjustment',
-    quantity: newLinks.length,
+    quantity: newLinks.length || 1,
     reason: 'Pi updated',
-    notes: `Updated Pi: ${body.label}`,
+    notes: `Updated Pi: ${body.label}${body.location ? ` @ ${body.location}` : ''}`,
     performed_by: 'System',
     action_type: 'UPDATE_PI_BUILD',
     pi_name: body.label,
