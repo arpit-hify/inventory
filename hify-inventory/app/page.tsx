@@ -150,29 +150,52 @@ export default function Home() {
   const lowStock = inventory.filter(i=>i.qty_in_office<=2&&i.qty_in_office>0).length;
   const outOfStock = inventory.filter(i=>i.qty_in_office===0).length;
 
+  const navItems = [
+    {id:'home' as const, l:'Home', Icon:I.Home},
+    {id:'inventory' as const, l:'Assets', Icon:I.Box},
+    {id:'pis' as const, l:'Pi Builds', Icon:I.Cpu},
+    {id:'logs' as const, l:'Logs', Icon:I.Activity},
+  ];
+
   return (
-    <div style={{background:'var(--hify-dark)',minHeight:'100vh',maxWidth:480,margin:'0 auto'}}>
+    <div className="min-h-screen" style={{background:'var(--hify-dark)'}}>
       {toast && <Toast msg={toast.msg} type={toast.type}/>}
       {showQRScanner && <QRScanner onScan={handleQRScan} onClose={()=>setShowQRScanner(false)}/>}
 
-      {/* HEADER */}
-      <header className="px-5 pt-14 pb-4 flex items-center justify-between">
+      {/* HEADER — sticky */}
+      <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 md:px-8" style={{background:'var(--hify-dark)',borderBottom:'1px solid var(--hify-border)'}}>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{background:'linear-gradient(135deg,#FF6B2B,#FF3D6E)'}}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" fill="white" fillOpacity=".9"/><rect x="9" y="9" width="6" height="6" fill="#FF6B2B"/></svg>
           </div>
-          <span className="font-display font-bold" style={{color:'white'}}>HiFy</span>
+          <span className="font-display font-bold" style={{color:'var(--hify-text)'}}>HiFy</span>
           <span className="font-display text-sm" style={{color:'var(--hify-muted)'}}>Inventory</span>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={fetchAll} className="p-2 rounded-xl" style={{background:'rgba(255,255,255,0.08)',color:'var(--hify-muted)'}} title="Refresh"><I.Refresh/></button>
+          <button onClick={fetchAll} className="p-2 rounded-xl" style={{background:'rgba(0,0,0,0.06)',color:'var(--hify-muted)'}} title="Refresh"><I.Refresh/></button>
           <button onClick={()=>setShowQRScanner(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold" style={{background:'rgba(255,107,43,0.15)',color:'var(--hify-orange)'}}>
             <I.Qr/> Scan
           </button>
         </div>
       </header>
 
-      <main className="pb-28 px-4">
+      <div className="flex">
+        {/* Desktop sidebar nav */}
+        <aside className="hidden md:flex flex-col w-52 shrink-0 sticky top-14 h-[calc(100vh-56px)] overflow-y-auto py-5 px-3 border-r" style={{borderColor:'var(--hify-border)'}}>
+          {navItems.map(({id,l,Icon})=>{
+            const active = tab===id;
+            return (
+              <button key={id} onClick={()=>{setTab(id);setSearch('');}}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium mb-1 w-full text-left transition-colors"
+                style={{background:active?'rgba(255,107,43,0.10)':'transparent',color:active?'var(--hify-orange)':'var(--hify-muted)'}}>
+                <Icon/>{l}
+              </button>
+            );
+          })}
+        </aside>
+
+        {/* Main content */}
+        <main className="flex-1 px-4 py-4 pb-28 md:pb-10 md:px-8 md:max-w-3xl">
 
         {/* ── HOME ── */}
         {tab==='home' && (
@@ -191,7 +214,7 @@ export default function Home() {
                 <h3 className="font-display font-semibold text-sm">Recent Activity</h3>
                 <button onClick={()=>setTab('logs')} className="text-xs" style={{color:'var(--hify-orange)'}}>See all →</button>
               </div>
-              {loading ? [1,2,3].map(i=><div key={i} className="h-12 rounded-lg mb-2" style={{background:'rgba(255,255,255,0.05)'}}/>) :
+              {loading ? [1,2,3].map(i=><div key={i} className="h-12 rounded-lg mb-2" style={{background:'rgba(0,0,0,0.05)'}}/>) :
                 logs.slice(0,5).map(log=>(
                 <div key={log.id} className="flex items-start gap-3 py-2.5 border-b last:border-0" style={{borderColor:'var(--hify-border)'}}>
                   <span className={`badge ${actionColor(log.action_type)} mt-0.5 shrink-0`}>{actionLabel(log.action_type)}</span>
@@ -277,7 +300,7 @@ export default function Home() {
                   {comps.length>0 && (
                     <div className="grid grid-cols-2 gap-1.5 mb-3">
                       {comps.map(c=>(
-                        <div key={c.id} className="px-2.5 py-1.5 rounded-lg text-xs" style={{background:'rgba(255,255,255,0.04)'}}>
+                        <div key={c.id} className="px-2.5 py-1.5 rounded-lg text-xs" style={{background:'rgba(0,0,0,0.05)'}}>
                           <span style={{color:'var(--hify-muted)'}}>{c.notes||'Part'}: </span>
                           <span className="font-medium">{c.component?.asset?.split(' ').slice(0,3).join(' ')}</span>
                         </div>
@@ -314,15 +337,16 @@ export default function Home() {
             ))}
           </div>
         )}
-      </main>
+        </main>
+      </div>
 
-      {/* BOTTOM NAV */}
-      <nav className="bottom-nav fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] px-2 pb-6 pt-2">
+      {/* Mobile bottom nav — hidden on desktop */}
+      <nav className="bottom-nav md:hidden fixed bottom-0 left-0 right-0 px-2 pb-6 pt-2">
         <div className="flex">
-          {([{id:'home',l:'Home',icon:<I.Home/>},{id:'inventory',l:'Assets',icon:<I.Box/>},{id:'pis',l:'Pi Builds',icon:<I.Cpu/>},{id:'logs',l:'Logs',icon:<I.Activity/>}] as const).map(item=>(
-            <button key={item.id} onClick={()=>{setTab(item.id);setSearch('');}} className="flex-1 flex flex-col items-center gap-1 py-2 text-xs font-medium" style={{color:tab===item.id?'var(--hify-orange)':'var(--hify-muted)'}}>
-              {item.icon}{item.l}
-              {tab===item.id && <div className="w-1 h-1 rounded-full" style={{background:'var(--hify-orange)'}}/>}
+          {navItems.map(({id,l,Icon})=>(
+            <button key={id} onClick={()=>{setTab(id);setSearch('');}} className="flex-1 flex flex-col items-center gap-1 py-2 text-xs font-medium" style={{color:tab===id?'var(--hify-orange)':'var(--hify-muted)'}}>
+              <Icon/>{l}
+              {tab===id && <div className="w-1 h-1 rounded-full" style={{background:'var(--hify-orange)'}}/>}
             </button>
           ))}
         </div>
@@ -336,7 +360,7 @@ export default function Home() {
           <div className="card p-6 w-full max-w-sm slide-up">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display font-semibold">{viewingPiQR.pi.label}</h3>
-              <button onClick={()=>setViewingPiQR(null)} className="p-1 rounded-full" style={{background:'rgba(255,255,255,0.1)'}}><I.Close/></button>
+              <button onClick={()=>setViewingPiQR(null)} className="p-1 rounded-full" style={{background:'rgba(0,0,0,0.07)'}}><I.Close/></button>
             </div>
             <div className="bg-white rounded-2xl p-4 flex items-center justify-center mb-4">
               <img src={viewingPiQR.qr} alt="QR Code" className="w-56 h-56"/>
@@ -364,11 +388,11 @@ function InventoryModal({item,onSave,onClose}: {item:Component|null;onSave:(d:an
   const set = (k:string,v:any) => setForm(f=>({...f,[k]:v}));
   const handleSave = async () => { if(!form.asset) return; setSaving(true); await onSave(form); setSaving(false); };
   return (
-    <div className="fixed inset-0 z-50 flex items-end modal-backdrop fade-in">
-      <div className="w-full max-w-[480px] mx-auto card rounded-t-3xl p-5 pb-10 slide-up" style={{maxHeight:'90vh',overflowY:'auto'}}>
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center modal-backdrop fade-in md:px-4">
+      <div className="w-full max-w-lg card rounded-t-3xl md:rounded-3xl p-5 pb-10 slide-up" style={{maxHeight:'90vh',overflowY:'auto'}}>
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-display font-semibold text-lg">{item?'Edit Asset':'Add Asset'}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-full" style={{background:'rgba(255,255,255,0.1)'}}><I.Close/></button>
+          <button onClick={onClose} className="p-1.5 rounded-full" style={{background:'rgba(0,0,0,0.07)'}}><I.Close/></button>
         </div>
         <div className="space-y-3">
           {[{l:'Asset Name *',k:'asset',p:'e.g. Raspberry Pi 5 8GB'},{l:'Brand',k:'brand',p:'e.g. Raspberry Pi'},{l:'Vendor',k:'vendor',p:'e.g. Robu'}].map(f=>(
@@ -413,11 +437,11 @@ function PiModal({pi,inventory,onSave,onClose}: {pi:PiUnit|null;inventory:Compon
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end modal-backdrop fade-in">
-      <div className="w-full max-w-[480px] mx-auto card rounded-t-3xl p-5 pb-10 slide-up" style={{maxHeight:'92vh',overflowY:'auto'}}>
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center modal-backdrop fade-in md:px-4">
+      <div className="w-full max-w-lg card rounded-t-3xl md:rounded-3xl p-5 pb-10 slide-up" style={{maxHeight:'92vh',overflowY:'auto'}}>
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-display font-semibold text-lg">{pi?'Edit Pi Build':'New Pi Build'}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-full" style={{background:'rgba(255,255,255,0.1)'}}><I.Close/></button>
+          <button onClick={onClose} className="p-1.5 rounded-full" style={{background:'rgba(0,0,0,0.07)'}}><I.Close/></button>
         </div>
         <div className="space-y-3">
           <div><label className="text-xs font-medium mb-1.5 block" style={{color:'var(--hify-muted)'}}>Pi Label *</label>
