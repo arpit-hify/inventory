@@ -442,7 +442,7 @@ export default function Home() {
               ) : filteredInventory.length===0 ? (
                 <div style={{textAlign:'center',paddingTop:60,color:'var(--muted)',fontSize:13}}>No assets found</div>
               ) : (
-                <div style={{display: isDesktop ? 'grid' : 'flex', gridTemplateColumns: isDesktop ? '1fr 1fr' : undefined, flexDirection:'column', gap:10, alignItems:'start'}}>
+                <div style={{display: isDesktop ? 'grid' : 'flex', gridTemplateColumns: isDesktop ? '1fr 1fr' : undefined, flexDirection:'column', gap:10, alignItems: isDesktop ? 'start' : 'stretch'}}>
                   {grouped.map(({category,items})=>(
                     <CategorySection key={category.id} category={category} items={items}
                       isOpen={openCategory===category.id}
