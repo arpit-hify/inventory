@@ -289,15 +289,16 @@ export default function Home() {
               {/* Stats row */}
               <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8}}>
                 {[
-                  {l:'SKUs',    v:inventory.length,  sub:'in inventory'},
-                  {l:'Pi Builds',v:pis.length,        sub:'assembled'},
-                  {l:'Low Stock',v:lowStock+outOfStock,sub:`${outOfStock} out`},
+                  {l:'SKUs',     v:inventory.length,   sub:'in inventory', onClick:()=>setTab('inventory')},
+                  {l:'Pi Builds',v:pis.length,          sub:'assembled',   onClick:()=>setTab('pis')},
+                  {l:'Low Stock',v:lowStock+outOfStock, sub:`${outOfStock} out`, onClick:()=>{setStockFilter('low');setTab('inventory');}},
                 ].map(s=>(
-                  <div key={s.l} className="card" style={{padding:'12px 12px 10px'}}>
+                  <button key={s.l} onClick={s.onClick} className="card" style={{padding:'12px 12px 10px',textAlign:'left',border:'none',cursor:'pointer',transition:'opacity 0.15s'}}
+                    onMouseEnter={e=>(e.currentTarget.style.opacity='0.75')} onMouseLeave={e=>(e.currentTarget.style.opacity='1')}>
                     <div className="font-display" style={{fontSize:26,fontWeight:700,color:'var(--lime)',lineHeight:1}}>{loading?'—':s.v}</div>
                     <div style={{fontSize:12,fontWeight:600,color:'var(--text)',marginTop:4}}>{s.l}</div>
                     <div style={{fontSize:11,color:'var(--muted)',marginTop:1}}>{s.sub}</div>
-                  </div>
+                  </button>
                 ))}
               </div>
 
