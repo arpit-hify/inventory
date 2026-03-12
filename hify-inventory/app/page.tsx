@@ -56,8 +56,8 @@ const iconBtn = (color: string, bg: string): React.CSSProperties => ({
   border:'none', cursor:'pointer', flexShrink:0,
 });
 const fieldLabel: React.CSSProperties = { fontSize:11, fontWeight:600, color:'var(--muted)', display:'block', marginBottom:5, textTransform:'uppercase', letterSpacing:'0.05em' };
-const sheetWrap: React.CSSProperties = { width:'100%', maxWidth:480, boxSizing:'border-box', background:'var(--surface)', borderRadius:'20px 20px 0 0', padding:'20px 18px', paddingBottom:'calc(24px + env(safe-area-inset-bottom, 0px))', maxHeight:'92dvh', overflowY:'auto', overflowX:'hidden' };
-const sheetOuter: React.CSSProperties = { position:'fixed', inset:0, zIndex:50, display:'flex', alignItems:'flex-end', justifyContent:'center' };
+const sheetWrap = (isDesktop=false): React.CSSProperties => ({ width:'100%', maxWidth: isDesktop ? 580 : 480, boxSizing:'border-box', background:'var(--surface)', borderRadius: isDesktop ? 16 : '20px 20px 0 0', padding:'20px 18px', paddingBottom: isDesktop ? '20px' : 'calc(24px + env(safe-area-inset-bottom, 0px))', maxHeight:'92dvh', overflowY:'auto', overflowX:'hidden' });
+const sheetOuter = (isDesktop=false): React.CSSProperties => ({ position:'fixed', inset:0, zIndex:50, display:'flex', alignItems: isDesktop ? 'center' : 'flex-end', justifyContent:'center' });
 
 function stockBadge(qty: number) {
   if (qty === 0) return { cls:'badge-red',  label:'Out of stock' };
@@ -88,6 +88,18 @@ function timeAgo(iso: string) {
   return new Date(iso).toLocaleDateString('en-IN', { day:'numeric', month:'short' });
 }
 
+// ─── Desktop hook ─────────────────────────────────────────────────────────────
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isDesktop;
+}
+
 // ─── Toast ────────────────────────────────────────────────────────────────────
 function Toast({ msg, type }: { msg:string; type:'success'|'error' }) {
   return (
@@ -102,6 +114,7 @@ const PI_SLOT_CATEGORIES = ['RPi','SSD','HAT','Fan','Camera','AI Accelerator','R
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function Home() {
+  const isDesktop = useIsDesktop();
   const [tab, setTab]           = useState<'home'|'inventory'|'pis'|'logs'>('home');
   const [inventory, setInventory] = useState<Component[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -255,34 +268,89 @@ export default function Home() {
     {id:'logs'      as const, l:'Logs',    Icon:I.Activity},
   ];
 
+  const switchTab = (t: typeof tab) => { setTab(t); setSearch(''); setStockFilter('all'); };
+
   return (
-    <div style={{background:'var(--bg)',height:'100dvh',display:'flex',justifyContent:'center',overflow:'hidden'}}>
-      <div style={{width:'100%',maxWidth:430,height:'100%',display:'flex',flexDirection:'column',background:'var(--bg)',position:'relative'}}>
+    <div style={{background:'var(--bg)',height:'100dvh',display:'flex',overflow:'hidden'}}>
 
-        {toast && <Toast msg={toast.msg} type={toast.type}/>}
-        {showQRScanner && <QRScanner onScan={handleQRScan} onClose={()=>setShowQRScanner(false)}/>}
-
-        {/* ── HEADER ── */}
-        <header style={{flexShrink:0,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderBottom:'1px solid var(--border)'}}>
-          <div style={{display:'flex',alignItems:'center',gap:9}}>
-            <div style={{width:32,height:32,borderRadius:10,background:'var(--pink)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+      {/* ── DESKTOP SIDEBAR ── */}
+      {isDesktop && (
+        <aside style={{width:200,flexShrink:0,height:'100%',background:'var(--surface)',borderRight:'1px solid var(--border)',display:'flex',flexDirection:'column',padding:'20px 12px'}}>
+          <div style={{display:'flex',alignItems:'center',gap:9,padding:'4px 8px',marginBottom:28}}>
+            <div style={{width:30,height:30,borderRadius:9,background:'var(--pink)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                 <rect x="4" y="4" width="16" height="16" rx="2.5" fill="white" fillOpacity=".95"/>
                 <rect x="9" y="9" width="6" height="6" fill="var(--pink)"/>
               </svg>
             </div>
-            <span className="font-display" style={{fontWeight:700,fontSize:15,color:'var(--text)'}}>HiFy <span style={{color:'var(--muted)',fontWeight:400}}>Inventory</span></span>
+            <span className="font-display" style={{fontWeight:700,fontSize:14,color:'var(--text)'}}>HiFy <span style={{color:'var(--muted)',fontWeight:400}}>Inventory</span></span>
           </div>
-          <div style={{display:'flex',gap:6}}>
-            <button onClick={fetchAll} style={iconBtn('var(--muted)','var(--surface2)')} title="Refresh"><I.Refresh/></button>
-            <button onClick={()=>setShowQRScanner(true)} style={{height:32,padding:'0 12px',borderRadius:9,background:'rgba(255,61,110,0.1)',color:'var(--pink)',display:'flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,border:'1px solid rgba(255,61,110,0.2)',cursor:'pointer'}}>
-              <I.Qr/> Scan
+          <div style={{display:'flex',flexDirection:'column',gap:4,flex:1}}>
+            {navItems.map(({id,l,Icon})=>{
+              const active = tab===id;
+              return (
+                <button key={id} onClick={()=>switchTab(id)}
+                  style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderRadius:10,background:active?'rgba(255,61,110,0.1)':'transparent',color:active?'var(--pink)':'var(--muted)',border:'none',cursor:'pointer',textAlign:'left',fontFamily:'inherit',fontSize:14,fontWeight:active?600:400,transition:'background 0.15s,color 0.15s'}}>
+                  <Icon/>{l}
+                </button>
+              );
+            })}
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:8,paddingTop:12,borderTop:'1px solid var(--border)'}}>
+            <button onClick={()=>setShowQRScanner(true)} style={{display:'flex',alignItems:'center',gap:8,padding:'9px 12px',borderRadius:10,background:'rgba(255,61,110,0.08)',color:'var(--pink)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600,fontFamily:'inherit'}}>
+              <I.Qr/> Scan QR
+            </button>
+            <button onClick={fetchAll} style={{display:'flex',alignItems:'center',gap:8,padding:'9px 12px',borderRadius:10,background:'transparent',color:'var(--muted)',border:'none',cursor:'pointer',fontSize:13,fontFamily:'inherit'}}>
+              <I.Refresh/> Refresh
             </button>
           </div>
-        </header>
+        </aside>
+      )}
+
+      <div style={{flex:1,minWidth:0,height:'100%',display:'flex',flexDirection:'column',background:'var(--bg)',position:'relative'}}>
+
+        {toast && <Toast msg={toast.msg} type={toast.type}/>}
+        {showQRScanner && <QRScanner onScan={handleQRScan} onClose={()=>setShowQRScanner(false)}/>}
+
+        {/* ── MOBILE HEADER ── */}
+        {!isDesktop && (
+          <header style={{flexShrink:0,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderBottom:'1px solid var(--border)'}}>
+            <div style={{display:'flex',alignItems:'center',gap:9}}>
+              <div style={{width:32,height:32,borderRadius:10,background:'var(--pink)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                  <rect x="4" y="4" width="16" height="16" rx="2.5" fill="white" fillOpacity=".95"/>
+                  <rect x="9" y="9" width="6" height="6" fill="var(--pink)"/>
+                </svg>
+              </div>
+              <span className="font-display" style={{fontWeight:700,fontSize:15,color:'var(--text)'}}>HiFy <span style={{color:'var(--muted)',fontWeight:400}}>Inventory</span></span>
+            </div>
+            <div style={{display:'flex',gap:6}}>
+              <button onClick={fetchAll} style={iconBtn('var(--muted)','var(--surface2)')} title="Refresh"><I.Refresh/></button>
+              <button onClick={()=>setShowQRScanner(true)} style={{height:32,padding:'0 12px',borderRadius:9,background:'rgba(255,61,110,0.1)',color:'var(--pink)',display:'flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,border:'1px solid rgba(255,61,110,0.2)',cursor:'pointer'}}>
+                <I.Qr/> Scan
+              </button>
+            </div>
+          </header>
+        )}
+
+        {/* ── DESKTOP TAB HEADER ── */}
+        {isDesktop && (
+          <header style={{flexShrink:0,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'16px 28px',borderBottom:'1px solid var(--border)'}}>
+            <h1 className="font-display" style={{fontWeight:700,fontSize:18,color:'var(--text)',margin:0}}>
+              {navItems.find(n=>n.id===tab)?.l}
+            </h1>
+            <div style={{display:'flex',gap:8}}>
+              {tab==='inventory' && <>
+                <button onClick={()=>setShowCategoryModal(true)} style={{height:36,padding:'0 14px',borderRadius:10,background:'rgba(207,255,4,0.1)',color:'var(--lime)',border:'1px solid rgba(207,255,4,0.2)',cursor:'pointer',fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:5}}><I.Tag/> New Category</button>
+                <button onClick={()=>{setEditingInventory(null);setDefaultCategory(null);setShowInventoryModal(true);}} style={{height:36,padding:'0 14px',borderRadius:10,background:'rgba(255,61,110,0.12)',color:'var(--pink)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:5}}><I.Plus/> Add Variant</button>
+              </>}
+              {tab==='pis' && <button onClick={()=>{setEditingPi(null);setShowPiModal(true);}} style={{height:36,padding:'0 14px',borderRadius:10,background:'rgba(255,61,110,0.12)',color:'var(--pink)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:5}}><I.Plus/> Assemble Pi</button>}
+            </div>
+          </header>
+        )}
 
         {/* ── MAIN ── */}
-        <main style={{flex:1,overflowY:'auto',padding:'14px 14px 8px'}}>
+        <main style={{flex:1,overflowY:'auto',padding: isDesktop ? '20px 28px 20px' : '14px 14px 8px'}}>
 
           {/* HOME */}
           {tab==='home' && (
@@ -351,10 +419,12 @@ export default function Home() {
                   <span style={{color:'var(--muted)',flexShrink:0}}><I.Search/></span>
                   <input className="input" style={{flex:1,background:'transparent',border:'none',padding:'0',height:'100%'}} placeholder="Search assets…" value={search} onChange={e=>setSearch(e.target.value)}/>
                 </div>
-                <button onClick={()=>setShowCategoryModal(true)} style={{height:38,padding:'0 12px',borderRadius:10,background:'rgba(207,255,4,0.1)',color:'var(--lime)',border:'1px solid rgba(207,255,4,0.2)',cursor:'pointer',fontSize:12,fontWeight:600,display:'flex',alignItems:'center',gap:5,flexShrink:0}}>
-                  <I.Tag/> Category
-                </button>
-                <button onClick={()=>{setEditingInventory(null);setDefaultCategory(null);setShowInventoryModal(true);}} style={{...iconBtn('var(--pink)','rgba(255,61,110,0.12)'),width:38,height:38,border:'none',flexShrink:0}}><I.Plus/></button>
+                {!isDesktop && <>
+                  <button onClick={()=>setShowCategoryModal(true)} style={{height:38,padding:'0 12px',borderRadius:10,background:'rgba(207,255,4,0.1)',color:'var(--lime)',border:'1px solid rgba(207,255,4,0.2)',cursor:'pointer',fontSize:12,fontWeight:600,display:'flex',alignItems:'center',gap:5,flexShrink:0}}>
+                    <I.Tag/> Category
+                  </button>
+                  <button onClick={()=>{setEditingInventory(null);setDefaultCategory(null);setShowInventoryModal(true);}} style={{...iconBtn('var(--pink)','rgba(255,61,110,0.12)'),width:38,height:38,border:'none',flexShrink:0}}><I.Plus/></button>
+                </>}
               </div>
 
               {/* Stock filters */}
@@ -375,7 +445,7 @@ export default function Home() {
               ) : filteredInventory.length===0 ? (
                 <div style={{textAlign:'center',paddingTop:60,color:'var(--muted)',fontSize:13}}>No assets found</div>
               ) : (
-                <>
+                <div style={{display: isDesktop ? 'grid' : 'flex', gridTemplateColumns: isDesktop ? '1fr 1fr' : undefined, flexDirection: isDesktop ? undefined : 'column', gap:10, alignItems:'start'}}>
                   {grouped.map(({category,items})=>(
                     <CategorySection key={category.id} category={category} items={items}
                       onAddVariant={()=>{ setEditingInventory(null); setDefaultCategory(category); setShowInventoryModal(true); }}
@@ -392,7 +462,7 @@ export default function Home() {
                       onReceive={item=>setReceivingStockFor(item)}
                     />
                   )}
-                </>
+                </div>
               )}
             </div>
           )}
@@ -405,16 +475,17 @@ export default function Home() {
                   <span style={{color:'var(--muted)',flexShrink:0}}><I.Search/></span>
                   <input className="input" style={{flex:1,background:'transparent',border:'none',padding:'0',height:'100%'}} placeholder="Search Pi builds…" value={search} onChange={e=>setSearch(e.target.value)}/>
                 </div>
-                <button onClick={()=>{setEditingPi(null);setShowPiModal(true);}} style={{...iconBtn('var(--pink)','rgba(255,61,110,0.12)'),width:38,height:38,border:'none'}}><I.Plus/></button>
+                {!isDesktop && <button onClick={()=>{setEditingPi(null);setShowPiModal(true);}} style={{...iconBtn('var(--pink)','rgba(255,61,110,0.12)'),width:38,height:38,border:'none'}}><I.Plus/></button>}
               </div>
 
               {loading ? (
-                <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                <div style={{display: isDesktop ? 'grid' : 'flex', gridTemplateColumns: isDesktop ? 'repeat(3,1fr)' : undefined, flexDirection:'column',gap:8}}>
                   {[1,2,3].map(i=><div key={i} className="skeleton" style={{height:120}}/>)}
                 </div>
               ) : filteredPis.length===0 ? (
                 <div style={{textAlign:'center',paddingTop:60,color:'var(--muted)',fontSize:13}}>No Pi builds yet</div>
-              ) : filteredPis.map(pi=>{
+              ) : <div style={{display: isDesktop ? 'grid' : 'flex', gridTemplateColumns: isDesktop ? 'repeat(3,1fr)' : undefined, flexDirection: isDesktop ? undefined : 'column', gap:10}}>
+              {filteredPis.map(pi=>{
                 const comps = pi.pi_components||[];
                 return (
                   <div key={pi.id} className="card" style={{padding:14}}>
@@ -445,6 +516,7 @@ export default function Home() {
                   </div>
                 );
               })}
+              </div>}
             </div>
           )}
 
@@ -472,38 +544,41 @@ export default function Home() {
           )}
         </main>
 
-        {/* ── BOTTOM NAV ── */}
-        <nav style={{flexShrink:0,background:'var(--surface)',borderTop:'1px solid var(--border)',paddingBottom:'env(safe-area-inset-bottom, 4px)'}}>
-          <div style={{display:'flex'}}>
-            {navItems.map(({id,l,Icon})=>{
-              const active = tab===id;
-              return (
-                <button key={id} onClick={()=>{setTab(id);setSearch('');setStockFilter('all');}} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:3,paddingTop:10,paddingBottom:8,color:active?'var(--pink)':'var(--muted)',background:'transparent',border:'none',cursor:'pointer'}}>
-                  <Icon/>
-                  <span style={{fontSize:10,fontWeight:active?600:400}}>{l}</span>
-                </button>
-              );
-            })}
-          </div>
-        </nav>
+        {/* ── MOBILE BOTTOM NAV ── */}
+        {!isDesktop && (
+          <nav style={{flexShrink:0,background:'var(--surface)',borderTop:'1px solid var(--border)',paddingBottom:'env(safe-area-inset-bottom, 4px)'}}>
+            <div style={{display:'flex'}}>
+              {navItems.map(({id,l,Icon})=>{
+                const active = tab===id;
+                return (
+                  <button key={id} onClick={()=>switchTab(id)} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:3,paddingTop:10,paddingBottom:8,color:active?'var(--pink)':'var(--muted)',background:'transparent',border:'none',cursor:'pointer'}}>
+                    <Icon/>
+                    <span style={{fontSize:10,fontWeight:active?600:400}}>{l}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        )}
 
         {/* ── MODALS ── */}
         {showInventoryModal && (
-          <InventoryModal item={editingInventory} categories={categories} defaultCategory={defaultCategory} onSave={saveInventory} onClose={()=>{setShowInventoryModal(false);setEditingInventory(null);setDefaultCategory(null);}}/>
+          <InventoryModal item={editingInventory} categories={categories} defaultCategory={defaultCategory} onSave={saveInventory} onClose={()=>{setShowInventoryModal(false);setEditingInventory(null);setDefaultCategory(null);}} isDesktop={isDesktop}/>
         )}
         {showPiModal && (
-          <PiModal pi={editingPi} inventory={inventory} onSave={savePi} onClose={()=>{setShowPiModal(false);setEditingPi(null);}}/>
+          <PiModal pi={editingPi} inventory={inventory} onSave={savePi} onClose={()=>{setShowPiModal(false);setEditingPi(null);}} isDesktop={isDesktop}/>
         )}
         {receivingStockFor && (
-          <ReceiveStockModal component={receivingStockFor} onReceive={receiveStock} onClose={()=>setReceivingStockFor(null)}/>
+          <ReceiveStockModal component={receivingStockFor} onReceive={receiveStock} onClose={()=>setReceivingStockFor(null)} isDesktop={isDesktop}/>
         )}
         {showCategoryModal && (
-          <CategoryModal onSave={saveCategory} onClose={()=>setShowCategoryModal(false)}/>
+          <CategoryModal onSave={saveCategory} onClose={()=>setShowCategoryModal(false)} isDesktop={isDesktop}/>
         )}
         {viewingPiDetail && (
           <PiDetailModal pi={viewingPiDetail} onClose={()=>setViewingPiDetail(null)}
             onEdit={pi=>{setViewingPiDetail(null);setEditingPi(pi);setShowPiModal(true);}}
             onGenerateQR={pi=>{setViewingPiDetail(null);generateQR(pi);}}
+            isDesktop={isDesktop}
           />
         )}
         {viewingPiQR && (
@@ -579,11 +654,11 @@ const EditIcon = ()=><svg width="12" height="12" fill="none" stroke="currentColo
 const TrashIcon= ()=><svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>;
 
 // ─── Category Modal ───────────────────────────────────────────────────────────
-function CategoryModal({ onSave, onClose }: { onSave:(name:string)=>void; onClose:()=>void }) {
+function CategoryModal({ onSave, onClose, isDesktop=false }: { onSave:(name:string)=>void; onClose:()=>void; isDesktop?:boolean }) {
   const [name, setName] = useState('');
   return (
-    <div className="modal-backdrop fade-in" style={sheetOuter}>
-      <div className="slide-up" style={sheetWrap}>
+    <div className="modal-backdrop fade-in" style={sheetOuter(isDesktop)}>
+      <div className={isDesktop?'fade-in':'slide-up'} style={sheetWrap(isDesktop)}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18}}>
           <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0}}>New Category</h2>
           <button onClick={onClose} style={iconBtn('var(--muted)','var(--surface2)')}><I.Close/></button>
@@ -599,12 +674,13 @@ function CategoryModal({ onSave, onClose }: { onSave:(name:string)=>void; onClos
 }
 
 // ─── Inventory Modal ──────────────────────────────────────────────────────────
-function InventoryModal({ item, categories, defaultCategory, onSave, onClose }: {
+function InventoryModal({ item, categories, defaultCategory, onSave, onClose, isDesktop=false }: {
   item: Component|null;
   categories: Category[];
   defaultCategory: Category|null;
   onSave: (d: {asset:string;brand:string;vendor:string;qty_in_office:number;category_id:string|null}) => void;
   onClose: () => void;
+  isDesktop?: boolean;
 }) {
   const [asset,      setAsset]      = useState(item?.asset||'');
   const [brand,      setBrand]      = useState(item?.brand||'');
@@ -621,8 +697,8 @@ function InventoryModal({ item, categories, defaultCategory, onSave, onClose }: 
   };
 
   return (
-    <div className="modal-backdrop fade-in" style={sheetOuter}>
-      <div className="slide-up" style={sheetWrap}>
+    <div className="modal-backdrop fade-in" style={sheetOuter(isDesktop)}>
+      <div className={isDesktop?'fade-in':'slide-up'} style={sheetWrap(isDesktop)}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18}}>
           <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0}}>{item?'Edit Variant':'Add Variant'}</h2>
           <button onClick={onClose} style={iconBtn('var(--muted)','var(--surface2)')}><I.Close/></button>
@@ -667,16 +743,17 @@ function InventoryModal({ item, categories, defaultCategory, onSave, onClose }: 
 }
 
 // ─── Receive Stock Modal ──────────────────────────────────────────────────────
-function ReceiveStockModal({ component, onReceive, onClose }: {
+function ReceiveStockModal({ component, onReceive, onClose, isDesktop=false }: {
   component: Component;
   onReceive: (id:string,qty:number)=>void;
   onClose: ()=>void;
+  isDesktop?: boolean;
 }) {
   const [qty, setQty] = useState(1);
   const [saving, setSaving] = useState(false);
   return (
-    <div className="modal-backdrop fade-in" style={sheetOuter}>
-      <div className="slide-up" style={sheetWrap}>
+    <div className="modal-backdrop fade-in" style={sheetOuter(isDesktop)}>
+      <div className={isDesktop?'fade-in':'slide-up'} style={sheetWrap(isDesktop)}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
           <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0}}>Receive Stock</h2>
           <button onClick={onClose} style={iconBtn('var(--muted)','var(--surface2)')}><I.Close/></button>
@@ -704,13 +781,13 @@ function ReceiveStockModal({ component, onReceive, onClose }: {
 }
 
 // ─── Pi Detail Modal ──────────────────────────────────────────────────────────
-function PiDetailModal({ pi, onClose, onEdit, onGenerateQR }: {
-  pi: PiUnit; onClose:()=>void; onEdit:(pi:PiUnit)=>void; onGenerateQR:(pi:PiUnit)=>void;
+function PiDetailModal({ pi, onClose, onEdit, onGenerateQR, isDesktop=false }: {
+  pi: PiUnit; onClose:()=>void; onEdit:(pi:PiUnit)=>void; onGenerateQR:(pi:PiUnit)=>void; isDesktop?:boolean;
 }) {
   const comps = pi.pi_components||[];
   return (
-    <div className="modal-backdrop fade-in" style={sheetOuter}>
-      <div className="slide-up" style={sheetWrap}>
+    <div className="modal-backdrop fade-in" style={sheetOuter(isDesktop)}>
+      <div className={isDesktop?'fade-in':'slide-up'} style={sheetWrap(isDesktop)}>
         <div style={{display:'flex',alignItems:'flex-start',gap:10,marginBottom:16}}>
           <div style={{flex:1,minWidth:0}}>
             <h2 className="font-display" style={{fontWeight:700,fontSize:18,color:'var(--text)',margin:0}}>{pi.label}</h2>
@@ -789,8 +866,8 @@ function PiDetailModal({ pi, onClose, onEdit, onGenerateQR }: {
 // ─── Pi Modal (assemble / edit) ───────────────────────────────────────────────
 type PiModalView = 'main' | 'pick-category' | 'pick-variant';
 
-function PiModal({ pi, inventory, onSave, onClose }: {
-  pi: PiUnit|null; inventory: Component[]; onSave:(d:Record<string,unknown>)=>void; onClose:()=>void;
+function PiModal({ pi, inventory, onSave, onClose, isDesktop=false }: {
+  pi: PiUnit|null; inventory: Component[]; onSave:(d:Record<string,unknown>)=>void; onClose:()=>void; isDesktop?:boolean;
 }) {
   const existingComps = pi?.pi_components||[];
 
@@ -849,8 +926,8 @@ function PiModal({ pi, inventory, onSave, onClose }: {
     (!varSearch.trim()||[i.asset,i.brand,i.vendor].some(f=>f?.toLowerCase().includes(varSearch.toLowerCase()))));
 
   return (
-    <div className="modal-backdrop fade-in" style={sheetOuter}>
-      <div className="slide-up" style={{...sheetWrap,width:'100%',position:'relative'}}>
+    <div className="modal-backdrop fade-in" style={sheetOuter(isDesktop)}>
+      <div className={isDesktop?'fade-in':'slide-up'} style={{...sheetWrap(isDesktop),width:'100%',position:'relative'}}>
 
         {/* ── Category picker ── */}
         {view==='pick-category' && (
