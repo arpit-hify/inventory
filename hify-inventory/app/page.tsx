@@ -441,7 +441,7 @@ export default function Home() {
               ) : filteredInventory.length===0 ? (
                 <div style={{textAlign:'center',paddingTop:60,color:'var(--muted)',fontSize:13}}>No assets found</div>
               ) : (
-                <div style={{columns: isDesktop ? 2 : 1, columnGap:12}}>
+                <div style={{display:'flex',flexDirection:'column',gap:0}}>
                   {grouped.map(({category,items})=>(
                     <CategorySection key={category.id} category={category} items={items}
                       onAddVariant={()=>{ setEditingInventory(null); setDefaultCategory(category); setShowInventoryModal(true); }}
@@ -612,40 +612,35 @@ function CategorySection({ category, items, onAddVariant, onEdit, onDelete, onRe
   onDelete: (i: Component) => void;
   onReceive: (i: Component) => void;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
+  const total = items.reduce((s,i)=>s+i.qty_in_office,0);
 
   return (
-    <div style={{breakInside:'avoid',marginBottom:10}}>
-      {/* Category header */}
-      <div style={{display:'flex',alignItems:'center',gap:8,padding:'6px 4px',marginBottom:6,cursor:'pointer'}} onClick={()=>setCollapsed(c=>!c)}>
-        <span style={{flex:1,fontWeight:700,fontSize:12,color:'var(--muted)',textTransform:'uppercase',letterSpacing:'0.06em'}}>{category?.name||'Uncategorized'}</span>
-        <button onClick={e=>{e.stopPropagation();onAddVariant();}} style={{height:22,padding:'0 8px',borderRadius:6,background:'rgba(155,184,0,0.12)',color:'var(--lime)',border:'none',cursor:'pointer',fontSize:11,fontWeight:600}}>+ Add</button>
+    <div className="card" style={{overflow:'hidden',breakInside:'avoid',marginBottom:10}}>
+      {/* Header */}
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 12px',borderBottom:collapsed?'none':'1px solid var(--border)',cursor:'pointer'}} onClick={()=>setCollapsed(c=>!c)}>
+        <span style={{flex:1,fontWeight:600,fontSize:13,color:'var(--text)'}}>{category?.name||'Uncategorized'}</span>
+        <span className="badge badge-gray" style={{fontSize:10}}>{total} units</span>
+        <button onClick={e=>{e.stopPropagation();onAddVariant();}} style={{height:24,padding:'0 8px',borderRadius:6,background:'rgba(155,184,0,0.12)',color:'var(--lime)',border:'none',cursor:'pointer',fontSize:11,fontWeight:600}}>+ Add</button>
         <span style={{color:'var(--muted)',display:'flex'}}>{collapsed?<ChevDown/>:<ChevUp/>}</span>
       </div>
-      {/* Item cards */}
-      {!collapsed && items.map(item=>{
-        const sb = stockBadge(item.qty_in_office);
+      {/* Items */}
+      {!collapsed && items.map((item,i)=>{
         const accentColor = item.qty_in_office===0?'var(--pink)':item.qty_in_office<=3?'#F79009':'var(--green2)';
         return (
-          <div key={item.id} className="card" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',marginBottom:7,overflow:'hidden',position:'relative'}}>
-            {/* Left stock indicator bar */}
-            <div style={{width:3,height:36,borderRadius:2,background:accentColor,flexShrink:0}}/>
-            {/* Info */}
+          <div key={item.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderBottom:i<items.length-1?'1px solid var(--border)':'none'}}>
+            <div style={{width:3,alignSelf:'stretch',borderRadius:2,background:accentColor,flexShrink:0}}/>
             <div style={{flex:1,minWidth:0}}>
-              <p style={{fontSize:13,fontWeight:600,color:'var(--text)',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.asset}</p>
-              <p style={{fontSize:11,color:'var(--muted)',margin:'2px 0 0'}}>{[item.brand,item.vendor].filter(Boolean).join(' · ')||' '}</p>
+              <p style={{fontSize:13,fontWeight:500,color:'var(--text)',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.asset}</p>
+              {(item.brand||item.vendor) && <p style={{fontSize:11,color:'var(--muted)',margin:'1px 0 0'}}>{[item.brand,item.vendor].filter(Boolean).join(' · ')}</p>}
             </div>
-            {/* Stock count */}
-            <div style={{textAlign:'center',flexShrink:0,minWidth:36}}>
-              <div style={{fontSize:20,fontWeight:700,lineHeight:1,color:accentColor}}>{item.qty_in_office}</div>
-              <div style={{fontSize:9,color:'var(--muted)',marginTop:1,textTransform:'uppercase',letterSpacing:'0.05em'}}>units</div>
+            <div style={{textAlign:'center',flexShrink:0,minWidth:32}}>
+              <div style={{fontSize:18,fontWeight:700,lineHeight:1,color:accentColor}}>{item.qty_in_office}</div>
+              <div style={{fontSize:9,color:'var(--muted)',marginTop:1,textTransform:'uppercase',letterSpacing:'0.04em'}}>units</div>
             </div>
-            {/* Actions */}
-            <div style={{display:'flex',gap:5,flexShrink:0}}>
-              <button onClick={()=>onReceive(item)} style={{...iconBtn('var(--green2)','rgba(18,183,106,0.15)'),width:32,height:32,borderRadius:8}}><PackIcon/></button>
-              <button onClick={()=>onEdit(item)} style={{...iconBtn('var(--pink)','rgba(255,107,53,0.12)'),width:32,height:32,borderRadius:8}}><EditIcon/></button>
-              <button onClick={()=>onDelete(item)} style={{...iconBtn('var(--muted)','var(--surface2)'),width:32,height:32,borderRadius:8}}><TrashIcon/></button>
-            </div>
+            <button onClick={()=>onReceive(item)} style={{...iconBtn('var(--green2)','rgba(18,183,106,0.15)'),width:32,height:32,borderRadius:8}}><PackIcon/></button>
+            <button onClick={()=>onEdit(item)} style={{...iconBtn('var(--pink)','rgba(255,107,53,0.12)'),width:32,height:32,borderRadius:8}}><EditIcon/></button>
+            <button onClick={()=>onDelete(item)} style={{...iconBtn('var(--muted)','var(--surface2)'),width:32,height:32,borderRadius:8}}><TrashIcon/></button>
           </div>
         );
       })}
