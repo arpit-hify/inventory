@@ -8,8 +8,8 @@ interface QRScannerProps {
 
 export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   const scannerRef = useRef<any>(null);
+  const stoppedRef = useRef(false);
   const [error, setError] = useState('');
-  const [started, setStarted] = useState(false);
 
   useEffect(() => {
     let scanner: any = null;
@@ -23,13 +23,14 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         await scanner.start(
           { facingMode: 'environment' },
           { fps: 10, qrbox: { width: 250, height: 250 } },
-          (decodedText: string) => {
+          async (decodedText: string) => {
+            if (stoppedRef.current) return;
+            stoppedRef.current = true;
+            try { await scanner.stop(); } catch { /* ignore */ }
             onScan(decodedText);
-            scanner.stop();
           },
           () => {}
         );
-        setStarted(true);
       } catch (err: any) {
         setError(err?.message || 'Camera access denied. Please allow camera permissions.');
       }
@@ -38,7 +39,8 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
     startScanner();
 
     return () => {
-      if (scannerRef.current) {
+      if (scannerRef.current && !stoppedRef.current) {
+        stoppedRef.current = true;
         scannerRef.current.stop().catch(() => {});
       }
     };
