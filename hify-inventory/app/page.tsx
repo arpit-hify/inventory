@@ -231,7 +231,8 @@ export default function Home() {
 
   // ── Derived data ─────────────────────────────────────────────────────────────
   const filteredInventory = inventory.filter(i => {
-    const matchSearch = !search || i.asset.toLowerCase().includes(search.toLowerCase()) || (i.brand||'').toLowerCase().includes(search.toLowerCase());
+    const q = search.toLowerCase();
+    const matchSearch = !search || [i.asset, i.brand, i.vendor, i.category?.name].some(f=>f?.toLowerCase().includes(q));
     const matchStock  = stockFilter==='all' || (stockFilter==='low' && i.qty_in_office>0 && i.qty_in_office<=3) || (stockFilter==='out' && i.qty_in_office===0);
     return matchSearch && matchStock;
   });
@@ -806,16 +807,30 @@ function PiModal({ pi, inventory, onSave, onClose }: {
   const [view,     setView]     = useState<PiModalView>('main');
   const [pickerCat,setPickerCat]= useState<string>('');
   const [varSearch,setVarSearch]= useState('');
+  const [dupWarning,setDupWarning]= useState<{existing:Component;incoming:Component}|null>(null);
 
   // Derive categories that have inventory items
   const cats = Array.from(new Map(
     inventory.filter(i=>i.category).map(i=>[i.category!.id, i.category!])
   ).values()).sort((a,b)=>a.name.localeCompare(b.name));
 
-  const addComponent = (component_id: string, role: string) => {
+  const addComponent = (component_id: string, role: string, force=false) => {
+    if (!force) {
+      const existingInCat = selected.find(s => {
+        const comp = inventory.find(c=>c.id===s.component_id);
+        return comp?.category?.name === role;
+      });
+      if (existingInCat) {
+        const existingComp = inventory.find(c=>c.id===existingInCat.component_id)!;
+        const incomingComp = inventory.find(c=>c.id===component_id)!;
+        setDupWarning({existing:existingComp, incoming:incomingComp});
+        return;
+      }
+    }
     setSelected(s=>[...s,{component_id,role}]);
     setView('main');
     setVarSearch('');
+    setDupWarning(null);
   };
   const removeComponent = (idx: number) => setSelected(s=>s.filter((_,i)=>i!==idx));
 
@@ -831,11 +846,11 @@ function PiModal({ pi, inventory, onSave, onClose }: {
   };
 
   const variantItems = inventory.filter(i=>i.category?.name===pickerCat&&
-    (!varSearch.trim()||i.asset.toLowerCase().includes(varSearch.toLowerCase())));
+    (!varSearch.trim()||[i.asset,i.brand,i.vendor].some(f=>f?.toLowerCase().includes(varSearch.toLowerCase()))));
 
   return (
     <div className="modal-backdrop fade-in" style={sheetOuter}>
-      <div className="slide-up" style={{...sheetWrap,width:'100%'}}>
+      <div className="slide-up" style={{...sheetWrap,width:'100%',position:'relative'}}>
 
         {/* ── Category picker ── */}
         {view==='pick-category' && (
@@ -865,8 +880,26 @@ function PiModal({ pi, inventory, onSave, onClose }: {
         {/* ── Variant picker ── */}
         {view==='pick-variant' && (
           <>
+            {dupWarning && (
+              <div style={{position:'absolute',inset:0,zIndex:10,background:'rgba(0,0,0,0.7)',backdropFilter:'blur(4px)',display:'flex',alignItems:'flex-end',justifyContent:'center',borderRadius:'20px 20px 0 0'}}>
+                <div style={{width:'100%',padding:'20px 18px 28px',background:'var(--surface)',borderTop:'1px solid var(--border)'}}>
+                  <p style={{fontSize:13,fontWeight:700,color:'var(--pink)',margin:'0 0 6px'}}>Already have a {pickerCat}</p>
+                  <p style={{fontSize:13,color:'var(--text)',margin:'0 0 4px'}}>
+                    <span style={{color:'var(--muted)'}}>Current: </span>{dupWarning.existing.asset}{dupWarning.existing.brand ? ` · ${dupWarning.existing.brand}` : ''}
+                  </p>
+                  <p style={{fontSize:13,color:'var(--text)',margin:'0 0 18px'}}>
+                    <span style={{color:'var(--muted)'}}>Adding: </span>{dupWarning.incoming.asset}{dupWarning.incoming.brand ? ` · ${dupWarning.incoming.brand}` : ''}
+                  </p>
+                  <p style={{fontSize:12,color:'var(--muted)',margin:'0 0 16px'}}>Are you sure you want to add a second {pickerCat}?</p>
+                  <div style={{display:'flex',gap:10}}>
+                    <button onClick={()=>setDupWarning(null)} className="btn-ghost" style={{flex:1,padding:'12px 0',fontSize:13}}>Cancel</button>
+                    <button onClick={()=>addComponent(dupWarning.incoming.id,pickerCat,true)} className="btn-primary" style={{flex:1,padding:'12px 0',fontSize:13}}>Add anyway</button>
+                  </div>
+                </div>
+              </div>
+            )}
             <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
-              <button onClick={()=>setView('pick-category')} style={{...iconBtn('var(--text)','var(--surface2)'),flexShrink:0}}>
+              <button onClick={()=>{setView('pick-category');setDupWarning(null);}} style={{...iconBtn('var(--text)','var(--surface2)'),flexShrink:0}}>
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
               </button>
               <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0}}>{pickerCat}</h2>
