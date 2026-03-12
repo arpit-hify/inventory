@@ -136,18 +136,10 @@ export default function Home() {
   // On load: check ?pi= query param (from phone camera scanning QR URL)
   useEffect(()=>{
     const piId = new URLSearchParams(window.location.search).get('pi');
-    if (!piId) return;
-    // Wait for pis to load, then show detail
-    const check = setInterval(()=>{
-      setPis(current=>{
-        const found = current.find(p=>p.id===piId);
-        if (found) { setViewingPiDetail(found); clearInterval(check); }
-        return current;
-      });
-    }, 100);
-    setTimeout(()=>clearInterval(check), 5000);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!piId || pis.length === 0) return;
+    const found = pis.find(p=>p.id===piId);
+    if (found) setViewingPiDetail(found);
+  }, [pis]);
 
   // QR scan → show Pi detail (handles URL format and legacy JSON)
   const handleQRScan = (data: string) => {
