@@ -125,6 +125,7 @@ export default function Home() {
   const [search, setSearch]     = useState('');
   const [stockFilter, setStockFilter] = useState<'all'|'low'|'out'>('all');
   const [showQRScanner, setShowQRScanner] = useState(false);
+  const [openCategory, setOpenCategory] = useState<string|null>(null);
 
   // modals
   const [showInventoryModal, setShowInventoryModal] = useState(false);
@@ -444,6 +445,8 @@ export default function Home() {
                 <div style={{display: isDesktop ? 'grid' : 'flex', gridTemplateColumns: isDesktop ? '1fr 1fr' : undefined, flexDirection:'column', gap:10, alignItems:'start'}}>
                   {grouped.map(({category,items})=>(
                     <CategorySection key={category.id} category={category} items={items}
+                      isOpen={openCategory===category.id}
+                      onToggle={()=>setOpenCategory(o=>o===category.id?null:category.id)}
                       onAddVariant={()=>{ setEditingInventory(null); setDefaultCategory(category); setShowInventoryModal(true); }}
                       onEdit={item=>{ setEditingInventory(item); setShowInventoryModal(true); }}
                       onDelete={deleteInventory}
@@ -452,6 +455,8 @@ export default function Home() {
                   ))}
                   {uncategorized.length>0 && (
                     <CategorySection category={null} items={uncategorized}
+                      isOpen={openCategory==='uncategorized'}
+                      onToggle={()=>setOpenCategory(o=>o==='uncategorized'?null:'uncategorized')}
                       onAddVariant={()=>{ setEditingInventory(null); setDefaultCategory(null); setShowInventoryModal(true); }}
                       onEdit={item=>{ setEditingInventory(item); setShowInventoryModal(true); }}
                       onDelete={deleteInventory}
@@ -604,28 +609,29 @@ export default function Home() {
 }
 
 // ─── Category Section ─────────────────────────────────────────────────────────
-function CategorySection({ category, items, onAddVariant, onEdit, onDelete, onReceive }: {
+function CategorySection({ category, items, isOpen, onToggle, onAddVariant, onEdit, onDelete, onReceive }: {
   category: Category|null;
   items: Component[];
+  isOpen: boolean;
+  onToggle: () => void;
   onAddVariant: () => void;
   onEdit: (i: Component) => void;
   onDelete: (i: Component) => void;
   onReceive: (i: Component) => void;
 }) {
-  const [collapsed, setCollapsed] = useState(true);
   const total = items.reduce((s,i)=>s+i.qty_in_office,0);
 
   return (
     <div className="card" style={{overflow:'hidden'}}>
       {/* Header */}
-      <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 12px',borderBottom:collapsed?'none':'1px solid var(--border)',cursor:'pointer'}} onClick={()=>setCollapsed(c=>!c)}>
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 12px',borderBottom:isOpen?'1px solid var(--border)':'none',cursor:'pointer'}} onClick={onToggle}>
         <span style={{flex:1,fontWeight:600,fontSize:13,color:'var(--text)'}}>{category?.name||'Uncategorized'}</span>
         <span className="badge badge-gray" style={{fontSize:10}}>{total} units</span>
         <button onClick={e=>{e.stopPropagation();onAddVariant();}} style={{height:24,padding:'0 8px',borderRadius:6,background:'rgba(155,184,0,0.12)',color:'var(--lime)',border:'none',cursor:'pointer',fontSize:11,fontWeight:600}}>+ Add</button>
-        <span style={{color:'var(--muted)',display:'flex'}}>{collapsed?<ChevDown/>:<ChevUp/>}</span>
+        <span style={{color:'var(--muted)',display:'flex'}}>{isOpen?<ChevUp/>:<ChevDown/>}</span>
       </div>
       {/* Items */}
-      {!collapsed && items.map((item,i)=>{
+      {isOpen && items.map((item,i)=>{
         const accentColor = item.qty_in_office===0?'var(--pink)':item.qty_in_office<=3?'#F79009':'var(--green2)';
         return (
           <div key={item.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderBottom:i<items.length-1?'1px solid var(--border)':'none'}}>
