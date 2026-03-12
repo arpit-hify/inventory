@@ -133,10 +133,34 @@ export default function Home() {
 
   useEffect(()=>{fetchAll();},[fetchAll]);
 
-  // QR scan → show Pi detail, not edit
+  // On load: check ?pi= query param (from phone camera scanning QR URL)
+  useEffect(()=>{
+    const piId = new URLSearchParams(window.location.search).get('pi');
+    if (!piId) return;
+    // Wait for pis to load, then show detail
+    const check = setInterval(()=>{
+      setPis(current=>{
+        const found = current.find(p=>p.id===piId);
+        if (found) { setViewingPiDetail(found); clearInterval(check); }
+        return current;
+      });
+    }, 100);
+    setTimeout(()=>clearInterval(check), 5000);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // QR scan → show Pi detail (handles URL format and legacy JSON)
   const handleQRScan = (data: string) => {
     setShowQRScanner(false);
     try {
+      // New format: URL with ?pi=<id>
+      if (data.includes('?pi=')) {
+        const id = new URL(data).searchParams.get('pi');
+        const found = pis.find(p=>p.id===id);
+        if (found) { setViewingPiDetail(found); return; }
+        showToast('Pi not found','error'); return;
+      }
+      // Legacy format: JSON {id, label}
       const parsed = JSON.parse(data);
       const found = pis.find(p=>p.id===parsed.id||p.label===parsed.label);
       if (found) setViewingPiDetail(found);
@@ -182,7 +206,7 @@ export default function Home() {
 
   const generateQR = async (pi: PiUnit) => {
     try {
-      const res = await fetch('/api/qr',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:JSON.stringify({id:pi.id,label:pi.label})})});
+      const res = await fetch('/api/qr',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:`https://hify-inventory.vercel.app?pi=${pi.id}`})});
       if (!res.ok) throw new Error('QR generation failed');
       const {qr} = await res.json();
       const saveRes = await fetch(`/api/pi-builds/${pi.id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...pi,qr_code:qr,components:(pi.pi_components||[]).map(c=>({component_id:c.component_id,role:c.notes}))})});
