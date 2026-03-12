@@ -431,7 +431,7 @@ export default function Home() {
               ) : filteredInventory.length===0 ? (
                 <div style={{textAlign:'center',paddingTop:60,color:'var(--muted)',fontSize:13}}>No assets found</div>
               ) : (
-                <div style={{display: isDesktop ? 'grid' : 'flex', gridTemplateColumns: isDesktop ? '1fr 1fr' : undefined, flexDirection: isDesktop ? undefined : 'column', gap:10, alignItems:'start'}}>
+                <div style={{display:'flex', flexDirection:'column', gap:10}}>
                   {grouped.map(({category,items})=>(
                     <CategorySection key={category.id} category={category} items={items}
                       onAddVariant={()=>{ setEditingInventory(null); setDefaultCategory(category); setShowInventoryModal(true); }}
@@ -715,7 +715,7 @@ function InventoryModal({ item, categories, defaultCategory, onSave, onClose, is
             <label style={fieldLabel}>{item?'Stock (direct edit)':'Initial Stock'}</label>
             <div style={{display:'flex',alignItems:'center',gap:10}}>
               <button onClick={()=>setQty(q=>Math.max(0,q-1))} style={{...iconBtn('var(--text)','var(--surface2)'),width:40,height:40,borderRadius:10,fontSize:20}}>−</button>
-              <input type="number" className="input" min={0} style={{flex:1,padding:'10px 13px',fontSize:18,fontWeight:700,textAlign:'center'}} value={qty} onChange={e=>setQty(Math.max(0,parseInt(e.target.value)||0))}/>
+              <input inputMode="numeric" autoComplete="off" className="input" min={0} style={{flex:1,padding:'10px 13px',fontSize:18,fontWeight:700,textAlign:'center'}} value={qty} onChange={e=>setQty(Math.max(0,parseInt(e.target.value)||0))}/>
               <button onClick={()=>setQty(q=>q+1)} style={{...iconBtn('var(--green2)','rgba(18,183,106,0.15)'),width:40,height:40,borderRadius:10,fontSize:20}}>+</button>
             </div>
           </div>
