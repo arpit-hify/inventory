@@ -268,7 +268,17 @@ export default function Home() {
     {id:'logs'      as const, l:'Logs',    Icon:I.Activity},
   ];
 
-  const switchTab = (t: typeof tab) => { setTab(t); setSearch(''); setStockFilter('all'); };
+  const switchTab = (t: typeof tab) => {
+    setTab(t); setSearch(''); setStockFilter('all');
+    const url = t === 'home' ? '/' : `/?tab=${t}`;
+    window.history.pushState({}, '', url);
+  };
+
+  // Read tab from URL on mount
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get('tab');
+    if (t && ['home','inventory','pis','logs'].includes(t)) setTab(t as typeof tab);
+  }, []);
 
   return (
     <div style={{background:'var(--bg)',height:'100dvh',display:'flex',overflow:'hidden'}}>
@@ -277,7 +287,7 @@ export default function Home() {
       {isDesktop && (
         <aside style={{width:200,flexShrink:0,height:'100%',background:'var(--surface)',borderRight:'1px solid var(--border)',display:'flex',flexDirection:'column',padding:'20px 12px'}}>
           <div style={{padding:'4px 8px',marginBottom:28}}>
-            <img src="/logo-light.png" alt="HiFy" style={{height:28,width:'auto'}}/>
+            <img src="/logo-light.png" alt="HiFy" onClick={()=>switchTab('home')} style={{height:28,width:'auto',cursor:'pointer'}}/>
           </div>
           <div style={{display:'flex',flexDirection:'column',gap:4,flex:1}}>
             {navItems.map(({id,l,Icon})=>{
@@ -309,7 +319,7 @@ export default function Home() {
         {/* ── MOBILE HEADER ── */}
         {!isDesktop && (
           <header style={{flexShrink:0,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderBottom:'1px solid var(--border)'}}>
-            <img src="/logo-light.png" alt="HiFy" style={{height:26,width:'auto'}}/>
+            <img src="/logo-light.png" alt="HiFy" onClick={()=>switchTab('home')} style={{height:26,width:'auto',cursor:'pointer'}}/>
             <div style={{display:'flex',gap:6}}>
               <button onClick={fetchAll} style={iconBtn('var(--muted)','var(--surface2)')} title="Refresh"><I.Refresh/></button>
               <button onClick={()=>setShowQRScanner(true)} style={{height:32,padding:'0 12px',borderRadius:9,background:'rgba(255,107,53,0.15)',color:'var(--pink)',display:'flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,border:'1px solid rgba(255,107,53,0.3)',cursor:'pointer'}}>
@@ -602,31 +612,40 @@ function CategorySection({ category, items, onAddVariant, onEdit, onDelete, onRe
   onDelete: (i: Component) => void;
   onReceive: (i: Component) => void;
 }) {
-  const [collapsed, setCollapsed] = useState(true);
-  const total = items.reduce((s,i)=>s+i.qty_in_office,0);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="card" style={{overflow:'hidden',breakInside:'avoid',marginBottom:10}}>
-      {/* Header */}
-      <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 12px',borderBottom:collapsed?'none':'1px solid var(--border)',cursor:'pointer'}} onClick={()=>setCollapsed(c=>!c)}>
-        <span style={{flex:1,fontWeight:600,fontSize:13,color:'var(--text)'}}>{category?.name||'Uncategorized'}</span>
-        <span className="badge badge-gray" style={{fontSize:10}}>{total} units</span>
-        <button onClick={e=>{e.stopPropagation();onAddVariant();}} style={{height:24,padding:'0 8px',borderRadius:6,background:'rgba(155,184,0,0.12)',color:'var(--lime)',border:'none',cursor:'pointer',fontSize:11,fontWeight:600}}>+ Add</button>
+    <div style={{breakInside:'avoid',marginBottom:10}}>
+      {/* Category header */}
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'6px 4px',marginBottom:6,cursor:'pointer'}} onClick={()=>setCollapsed(c=>!c)}>
+        <span style={{flex:1,fontWeight:700,fontSize:12,color:'var(--muted)',textTransform:'uppercase',letterSpacing:'0.06em'}}>{category?.name||'Uncategorized'}</span>
+        <button onClick={e=>{e.stopPropagation();onAddVariant();}} style={{height:22,padding:'0 8px',borderRadius:6,background:'rgba(155,184,0,0.12)',color:'var(--lime)',border:'none',cursor:'pointer',fontSize:11,fontWeight:600}}>+ Add</button>
         <span style={{color:'var(--muted)',display:'flex'}}>{collapsed?<ChevDown/>:<ChevUp/>}</span>
       </div>
-      {/* Items */}
-      {!collapsed && items.map((item,i)=>{
+      {/* Item cards */}
+      {!collapsed && items.map(item=>{
         const sb = stockBadge(item.qty_in_office);
+        const accentColor = item.qty_in_office===0?'var(--pink)':item.qty_in_office<=3?'#F79009':'var(--green2)';
         return (
-          <div key={item.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderBottom:i<items.length-1?'1px solid var(--border)':'none'}}>
+          <div key={item.id} className="card" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',marginBottom:7,overflow:'hidden',position:'relative'}}>
+            {/* Left stock indicator bar */}
+            <div style={{width:3,height:36,borderRadius:2,background:accentColor,flexShrink:0}}/>
+            {/* Info */}
             <div style={{flex:1,minWidth:0}}>
-              <p style={{fontSize:13,fontWeight:500,color:'var(--text)',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.asset}</p>
-              {(item.brand||item.vendor) && <p style={{fontSize:11,color:'var(--muted)',margin:'1px 0 0'}}>{[item.brand,item.vendor].filter(Boolean).join(' · ')}</p>}
+              <p style={{fontSize:13,fontWeight:600,color:'var(--text)',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.asset}</p>
+              <p style={{fontSize:11,color:'var(--muted)',margin:'2px 0 0'}}>{[item.brand,item.vendor].filter(Boolean).join(' · ')||' '}</p>
             </div>
-            <span className={`badge ${sb.cls}`} style={{flexShrink:0}}>{sb.label}</span>
-            <button onClick={()=>onReceive(item)} style={{...iconBtn('var(--green2)','rgba(18,183,106,0.15)'),width:36,height:36,borderRadius:9}}><PackIcon/></button>
-            <button onClick={()=>onEdit(item)} style={{...iconBtn('var(--pink)','rgba(255,107,53,0.15)'),width:36,height:36,borderRadius:9}}><EditIcon/></button>
-            <button onClick={()=>onDelete(item)} style={{...iconBtn('var(--muted)','var(--surface2)'),width:36,height:36,borderRadius:9}}><TrashIcon/></button>
+            {/* Stock count */}
+            <div style={{textAlign:'center',flexShrink:0,minWidth:36}}>
+              <div style={{fontSize:20,fontWeight:700,lineHeight:1,color:accentColor}}>{item.qty_in_office}</div>
+              <div style={{fontSize:9,color:'var(--muted)',marginTop:1,textTransform:'uppercase',letterSpacing:'0.05em'}}>units</div>
+            </div>
+            {/* Actions */}
+            <div style={{display:'flex',gap:5,flexShrink:0}}>
+              <button onClick={()=>onReceive(item)} style={{...iconBtn('var(--green2)','rgba(18,183,106,0.15)'),width:32,height:32,borderRadius:8}}><PackIcon/></button>
+              <button onClick={()=>onEdit(item)} style={{...iconBtn('var(--pink)','rgba(255,107,53,0.12)'),width:32,height:32,borderRadius:8}}><EditIcon/></button>
+              <button onClick={()=>onDelete(item)} style={{...iconBtn('var(--muted)','var(--surface2)'),width:32,height:32,borderRadius:8}}><TrashIcon/></button>
+            </div>
           </div>
         );
       })}
