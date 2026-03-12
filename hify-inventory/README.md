@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HiFy Inventory
 
-## Getting Started
+A mobile-first internal tool for managing hardware inventory and Raspberry Pi builds at the HiFy office. Track components, assemble Pi units, generate QR codes, and log all stock movements.
 
-First, run the development server:
+**Live:** [hify-inventory.vercel.app](https://hify-inventory.vercel.app)
+
+---
+
+## What it does
+
+### Asset Inventory
+- Track hardware components (SSDs, HATs, coolers, SD cards, power cables, cases, etc.) with brand and vendor info
+- See real-time stock levels with low-stock and out-of-stock indicators
+- Receive stock to add units, or edit counts directly
+- Filter by All / Low Stock / Out of Stock
+
+### Pi Builds
+- Assemble Raspberry Pi units by selecting components from inventory
+- Each Pi tracks its label, serial number, deployment location, status (In Office / Deployed / Faulty / Returned), components used, and free-text additional components
+- Assembling or editing a Pi automatically adjusts component stock levels
+- Deleting a Pi returns all components back to inventory
+
+### QR Codes
+- Generate a QR code for any Pi build
+- QR encodes a direct URL — scanning with any phone camera opens the app and shows the Pi's full detail (components, location, status)
+- Download the QR as a PNG to print and stick on the physical unit
+- Regenerate at any time if details change
+
+### In-App QR Scanner
+- Built-in camera scanner (tap "Scan QR" in the header)
+- Scan a Pi's QR code to instantly pull up its detail view
+
+### Activity Log
+- Every stock movement is logged: received stock, asset updates, Pi assemblies, Pi updates, Pi disassembly
+- View up to 200 recent transactions with timestamps
+
+---
+
+## Tech stack
+
+| Layer | Tech |
+|---|---|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| UI | React 19, Tailwind CSS v4 |
+| Database | Supabase (Postgres) |
+| Deployment | Vercel |
+| QR generation | `qrcode` npm package |
+| QR scanning | `html5-qrcode` (camera access) |
+
+---
+
+## Local setup
+
+```bash
+git clone https://github.com/arpit-hify/inventory.git
+cd inventory/hify-inventory
+npm install
+```
+
+Create `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://utyeotwygezjtkhjwwlr.supabase.co
+SUPABASE_SECRET_KEY=your_supabase_secret_key
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploying
 
-## Learn More
+GitHub auto-deploy is connected to Vercel. If GitHub is down, deploy manually:
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+cd hify-inventory
+npx vercel --prod
+```
