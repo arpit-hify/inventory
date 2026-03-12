@@ -6,19 +6,26 @@
 @tailwind utilities;
 
 :root {
-  --bg:       #F0F1F7;
-  --surface:  #FFFFFF;
-  --surface2: #E8EAF2;
-  --border:   rgba(0,0,0,0.08);
-  --text:     #181A20;
-  --muted:    #8B8FA8;
+  --bg:       #1C1F26;
+  --surface:  #252930;
+  --surface2: #2E333C;
+  --border:   rgba(255,255,255,0.1);
+  --text:     #E6EAF2;
+  --muted:    #828CA4;
 
-  --pink:     #F79009;
-  --pink2:    #FDB022;
-  --lime:     #9DB800;
-  --lime2:    #8AA800;
-  --green:    var(--green-600);
-  --green2:   var(--green-700);
+  /* Hify brand gradient extracted from logo */
+  --accent:        #FF6B35;
+  --accent-start:  #FFD000;
+  --accent-end:    #FF3D6E;
+  --accent-grad:   linear-gradient(135deg, #FFD000, #FF6B35, #FF3D6E);
+
+  /* keep --pink pointing at accent for compatibility */
+  --pink:     #FF6B35;
+  --pink2:    #FF8C5A;
+  --lime:     #CFFF04;
+  --lime2:    #D4FF00;
+  --green:    var(--green-500);
+  --green2:   var(--green-400);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -38,7 +45,6 @@ html, body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
 }
 
 .input {
@@ -51,11 +57,11 @@ html, body {
   transition: border-color 0.15s;
   outline: none;
 }
-.input:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(247,144,9,0.15); }
+.input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,107,53,0.2); }
 .input option { background: var(--surface); color: var(--text); }
 
 .btn-primary {
-  background: var(--pink);
+  background: var(--accent-grad);
   border-radius: 10px;
   font-weight: 600;
   color: white;
@@ -76,7 +82,7 @@ html, body {
   font-family: 'DM Sans', sans-serif;
   transition: color 0.15s, border-color 0.15s;
 }
-.btn-ghost:hover { color: var(--text); border-color: rgba(0,0,0,0.2); }
+.btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
 
 ::-webkit-scrollbar { width: 0; height: 0; }
 
@@ -92,7 +98,7 @@ html, body {
 }
 .fade-in { animation: fadeIn 0.18s ease forwards; }
 
-.modal-backdrop { background: rgba(0,0,0,0.45); backdrop-filter: blur(8px); }
+.modal-backdrop { background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
 
 .badge {
   display: inline-flex;
@@ -103,11 +109,11 @@ html, body {
   font-weight: 600;
   white-space: nowrap;
 }
-.badge-green  { background: rgba(3,152,85,0.12);    color: var(--green2); }
-.badge-lime   { background: rgba(155,184,0,0.15);   color: var(--lime2);  }
-.badge-pink   { background: rgba(247,144,9,0.14);   color: var(--pink);   }
-.badge-red    { background: rgba(234,23,115,0.12);  color: var(--pink-600); }
+.badge-green  { background: rgba(18,183,106,0.18);   color: var(--green2); }
+.badge-lime   { background: rgba(207,255,4,0.15);   color: var(--lime2);  }
+.badge-pink   { background: rgba(255,107,53,0.18);  color: var(--pink2);  }
+.badge-red    { background: rgba(255,61,110,0.22);  color: #FF6B8A;       }
 .badge-gray   { background: var(--surface2);        color: var(--muted);  }
 
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
-.skeleton { background: #DDE0EC; border-radius: 10px; animation: pulse 1.6s infinite; }
+.skeleton { background: var(--surface2); border-radius: 10px; animation: pulse 1.6s infinite; }
