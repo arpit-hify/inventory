@@ -6,12 +6,12 @@
 @tailwind utilities;
 
 :root {
-  --bg:       #111111;
-  --surface:  #1A1A1A;
-  --surface2: #222222;
-  --border:   rgba(255,255,255,0.07);
-  --text:     #F2F2F2;
-  --muted:    var(--neutral-500);
+  --bg:       #1C1F26;
+  --surface:  #252930;
+  --surface2: #2E333C;
+  --border:   rgba(255,255,255,0.18);
+  --text:     #E6EAF2;
+  --muted:    #828CA4;
 
   --pink:     var(--pink-600);
   --pink2:    var(--pink-500);
@@ -75,7 +75,7 @@ html, body {
   font-family: 'DM Sans', sans-serif;
   transition: color 0.15s, border-color 0.15s;
 }
-.btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+.btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.28); }
 
 ::-webkit-scrollbar { width: 0; height: 0; }
 
@@ -91,7 +91,7 @@ html, body {
 }
 .fade-in { animation: fadeIn 0.18s ease forwards; }
 
-.modal-backdrop { background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); }
+.modal-backdrop { background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); }
 
 .badge {
   display: inline-flex;
