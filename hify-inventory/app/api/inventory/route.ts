@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 export async function GET() {
   const { data, error } = await supabase
     .from('components')
-    .select('*')
+    .select('*, category:categories(id, name)')
     .order('asset');
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json(data);
@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
     asset: body.asset,
     brand: body.brand || null,
     vendor: body.vendor || null,
+    category_id: body.category_id || null,
     qty_in_office: initialQty,
     // legacy fields — zero-filled
     total_qty_purchased: initialQty,

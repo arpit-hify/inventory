@@ -10,6 +10,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     brand: body.brand || null,
     vendor: body.vendor || null,
     qty_in_office: body.qty_in_office ?? 0,
+    category_id: body.category_id ?? null,
   }).eq('id', id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
