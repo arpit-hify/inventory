@@ -56,7 +56,8 @@ const iconBtn = (color: string, bg: string): React.CSSProperties => ({
   border:'none', cursor:'pointer', flexShrink:0,
 });
 const fieldLabel: React.CSSProperties = { fontSize:11, fontWeight:600, color:'var(--muted)', display:'block', marginBottom:5, textTransform:'uppercase', letterSpacing:'0.05em' };
-const sheetWrap: React.CSSProperties = { width:'100%', boxSizing:'border-box', background:'var(--surface)', borderRadius:'20px 20px 0 0', padding:'20px 18px', paddingBottom:'calc(24px + env(safe-area-inset-bottom, 0px))', maxHeight:'92dvh', overflowY:'auto', overflowX:'hidden' };
+const sheetWrap: React.CSSProperties = { width:'100%', maxWidth:480, boxSizing:'border-box', background:'var(--surface)', borderRadius:'20px 20px 0 0', padding:'20px 18px', paddingBottom:'calc(24px + env(safe-area-inset-bottom, 0px))', maxHeight:'92dvh', overflowY:'auto', overflowX:'hidden' };
+const sheetOuter: React.CSSProperties = { position:'fixed', inset:0, zIndex:50, display:'flex', alignItems:'flex-end', justifyContent:'center' };
 
 function stockBadge(qty: number) {
   if (qty === 0) return { cls:'badge-red',  label:'Out of stock' };
@@ -579,7 +580,7 @@ const TrashIcon= ()=><svg width="12" height="12" fill="none" stroke="currentColo
 function CategoryModal({ onSave, onClose }: { onSave:(name:string)=>void; onClose:()=>void }) {
   const [name, setName] = useState('');
   return (
-    <div className="modal-backdrop fade-in" style={{position:'fixed',inset:0,zIndex:50,display:'flex',alignItems:'flex-end'}}>
+    <div className="modal-backdrop fade-in" style={sheetOuter}>
       <div className="slide-up" style={sheetWrap}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18}}>
           <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0}}>New Category</h2>
@@ -618,7 +619,7 @@ function InventoryModal({ item, categories, defaultCategory, onSave, onClose }: 
   };
 
   return (
-    <div className="modal-backdrop fade-in" style={{position:'fixed',inset:0,zIndex:50,display:'flex',alignItems:'flex-end'}}>
+    <div className="modal-backdrop fade-in" style={sheetOuter}>
       <div className="slide-up" style={sheetWrap}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18}}>
           <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0}}>{item?'Edit Variant':'Add Variant'}</h2>
@@ -672,7 +673,7 @@ function ReceiveStockModal({ component, onReceive, onClose }: {
   const [qty, setQty] = useState(1);
   const [saving, setSaving] = useState(false);
   return (
-    <div className="modal-backdrop fade-in" style={{position:'fixed',inset:0,zIndex:50,display:'flex',alignItems:'flex-end'}}>
+    <div className="modal-backdrop fade-in" style={sheetOuter}>
       <div className="slide-up" style={sheetWrap}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
           <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0}}>Receive Stock</h2>
@@ -706,7 +707,7 @@ function PiDetailModal({ pi, onClose, onEdit, onGenerateQR }: {
 }) {
   const comps = pi.pi_components||[];
   return (
-    <div className="modal-backdrop fade-in" style={{position:'fixed',inset:0,zIndex:50,display:'flex',alignItems:'flex-end'}}>
+    <div className="modal-backdrop fade-in" style={sheetOuter}>
       <div className="slide-up" style={sheetWrap}>
         <div style={{display:'flex',alignItems:'flex-start',gap:10,marginBottom:16}}>
           <div style={{flex:1,minWidth:0}}>
@@ -821,7 +822,7 @@ function PiModal({ pi, inventory, onSave, onClose }: {
   };
 
   return (
-    <div className="modal-backdrop fade-in" style={{position:'fixed',inset:0,zIndex:50,display:'flex',alignItems:'flex-end',overflow:'hidden'}}>
+    <div className="modal-backdrop fade-in" style={sheetOuter}>
       <div className="slide-up" style={{...sheetWrap,width:'100%',maxWidth:'100vw'}}>
         <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:18}}>
           <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0,flex:1}}>{pi?'Edit Pi':'Assemble Pi'}</h2>
@@ -861,7 +862,7 @@ function PiModal({ pi, inventory, onSave, onClose }: {
             <label style={fieldLabel}>Components</label>
             <div style={{display:'flex',flexDirection:'column',gap:6}}>
               {PI_SLOT_CATEGORIES.map(cat=>{
-                const catItems = inventory.filter(i=>i.category?.name===cat||i.category_id&&inventory.find(x=>x.id===i.id)?.category?.name===cat);
+                const catItems = inventory.filter(i=>i.category?.name===cat);
                 const selectedId = slots[cat]||'';
                 const selected   = inventory.find(i=>i.id===selectedId);
                 const isOpen     = openSlot===cat;
