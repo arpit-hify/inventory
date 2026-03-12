@@ -1,0 +1,82 @@
+/* Hify Design System — Color Primitives */
+/* Generated from Figma "Primitives" collection */
+
+:root {
+  /* Pink (brand) */
+  --pink-25:  #FEF8FB;
+  --pink-50:  #FAC9DE;
+  --pink-100: #F69AC2;
+  --pink-200: #F275AB;
+  --pink-300: #F0599A;
+  --pink-400: #EF4B92;
+  --pink-500: #EE3D89;
+  --pink-600: #EA1773;
+  --pink-700: #C71160;
+  --pink-800: #A20E4E;
+  --pink-900: #7C0A3C;
+
+  /* Amber */
+  --amber-25:  #FFFCF5;
+  --amber-50:  #FFFAEB;
+  --amber-100: #FEF0C7;
+  --amber-200: #FEDF89;
+  --amber-300: #FEC84B;
+  --amber-400: #FDB022;
+  --amber-500: #F79009;
+  --amber-600: #DC6803;
+  --amber-700: #B54708;
+  --amber-800: #93370D;
+  --amber-900: #7A2E0E;
+
+  /* Blue */
+  --blue-25:  #F5FAFF;
+  --blue-50:  #EFF8FF;
+  --blue-100: #D1E9FF;
+  --blue-200: #84CAFF;
+  --blue-300: #84CAFF;
+  --blue-400: #53B1FD;
+  --blue-500: #2E90FA;
+  --blue-600: #1570EF;
+  --blue-700: #175CD3;
+  --blue-800: #1849A9;
+  --blue-900: #194185;
+
+  /* Green */
+  --green-25:  #F6FEF9;
+  --green-50:  #ECFDF3;
+  --green-100: #D1FADF;
+  --green-200: #A6F4C5;
+  --green-300: #6CE9A6;
+  --green-400: #32D583;
+  --green-500: #12B76A;
+  --green-600: #039855;
+  --green-700: #027A48;
+  --green-800: #05603A;
+  --green-900: #054F31;
+
+  /* Neutral */
+  --neutral-25:  #FCFCFD;
+  --neutral-50:  #F9FAFB;
+  --neutral-100: #F2F4F7;
+  --neutral-200: #DEE2E8;
+  --neutral-300: #D0D5DD;
+  --neutral-400: #9AA2B1;
+  --neutral-500: #6B7280;
+  --neutral-600: #4C5562;
+  --neutral-700: #353B45;
+  --neutral-800: #232A33;
+  --neutral-900: #161A22;
+
+  /* Red */
+  --red-25:  #FFFBFA;
+  --red-50:  #FEF3F2;
+  --red-100: #FEE4E2;
+  --red-200: #FECDCA;
+  --red-300: #FDA29B;
+  --red-400: #F97066;
+  --red-500: #F04438;
+  --red-600: #D92D20;
+  --red-700: #B42318;
+  --red-800: #912018;
+  --red-900: #7A271A;
+}
