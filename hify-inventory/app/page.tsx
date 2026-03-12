@@ -785,180 +785,217 @@ function PiDetailModal({ pi, onClose, onEdit, onGenerateQR }: {
 }
 
 // ─── Pi Modal (assemble / edit) ───────────────────────────────────────────────
+type PiModalView = 'main' | 'pick-category' | 'pick-variant';
+
 function PiModal({ pi, inventory, onSave, onClose }: {
   pi: PiUnit|null; inventory: Component[]; onSave:(d:Record<string,unknown>)=>void; onClose:()=>void;
 }) {
   const existingComps = pi?.pi_components||[];
-
-  // Build initial slots from existing components using their notes (role) as category name
-  const initSlots: Record<string,string> = {};
-  existingComps.forEach(c=>{ if(c.notes) initSlots[c.notes]=c.component_id; });
 
   const [label,    setLabel]    = useState(pi?.label||'');
   const [serial,   setSerial]   = useState(pi?.serial_number||'');
   const [status,   setStatus]   = useState(pi?.status||'in_office');
   const [location, setLocation] = useState(pi?.location||'');
   const [notes,    setNotes]    = useState(pi?.notes||'');
-  const [slots,    setSlots]    = useState<Record<string,string>>(initSlots);
+  const [selected, setSelected] = useState<Array<{component_id:string;role:string}>>(
+    existingComps.map(c=>({component_id:c.component_id,role:c.notes||''}))
+  );
   const [extras,   setExtras]   = useState<string[]>(pi?.extra_components||[]);
   const [saving,   setSaving]   = useState(false);
-  const [openSlot, setOpenSlot] = useState<string|null>(null);
+  const [view,     setView]     = useState<PiModalView>('main');
+  const [pickerCat,setPickerCat]= useState<string>('');
+  const [varSearch,setVarSearch]= useState('');
 
-  const setSlot = (cat: string, id: string) => {
-    setSlots(s=>({...s,[cat]:id}));
-    setOpenSlot(null);
+  // Derive categories that have inventory items
+  const cats = Array.from(new Map(
+    inventory.filter(i=>i.category).map(i=>[i.category!.id, i.category!])
+  ).values()).sort((a,b)=>a.name.localeCompare(b.name));
+
+  const addComponent = (component_id: string, role: string) => {
+    setSelected(s=>[...s,{component_id,role}]);
+    setView('main');
+    setVarSearch('');
   };
+  const removeComponent = (idx: number) => setSelected(s=>s.filter((_,i)=>i!==idx));
 
   const existingIds = new Set(existingComps.map(c=>c.component_id));
-  const newlyAdded  = Object.values(slots).filter(id=>id&&!existingIds.has(id)).length;
-  const removed     = existingComps.filter(c=>!Object.values(slots).includes(c.component_id)).length;
+  const newlyAdded  = selected.filter(s=>!existingIds.has(s.component_id)).length;
+  const removed     = existingComps.filter(c=>!selected.find(s=>s.component_id===c.component_id)).length;
 
   const handleSave = async () => {
     if (!label.trim()||!location.trim()) return;
     setSaving(true);
-    const components = Object.entries(slots).filter(([,id])=>id).map(([role,component_id])=>({component_id,role}));
-    await onSave({label:label.trim(),serial_number:serial||`HiFy-${Date.now()}`,status,location:location.trim(),notes,extra_components:extras.filter(e=>e.trim()),components});
+    await onSave({label:label.trim(),serial_number:serial||`HiFy-${Date.now()}`,status,location:location.trim(),notes,extra_components:extras.filter(e=>e.trim()),components:selected.map(s=>({component_id:s.component_id,role:s.role}))});
     setSaving(false);
   };
 
+  const variantItems = inventory.filter(i=>i.category?.name===pickerCat&&
+    (!varSearch.trim()||i.asset.toLowerCase().includes(varSearch.toLowerCase())));
+
   return (
     <div className="modal-backdrop fade-in" style={sheetOuter}>
-      <div className="slide-up" style={{...sheetWrap,width:'100%',maxWidth:'100vw'}}>
-        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:18}}>
-          <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0,flex:1}}>{pi?'Edit Pi':'Assemble Pi'}</h2>
-          <button onClick={onClose} style={{...iconBtn('var(--muted)','var(--surface2)'),flexShrink:0}}><I.Close/></button>
-        </div>
+      <div className="slide-up" style={{...sheetWrap,width:'100%'}}>
 
-        <div style={{display:'flex',flexDirection:'column',gap:12}}>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
-            <div>
-              <label style={fieldLabel}>Label *</label>
-              <input className="input" style={{width:'100%',boxSizing:'border-box',padding:'10px 12px'}} placeholder="Pi-Alpha-01" value={label} onChange={e=>setLabel(e.target.value)}/>
+        {/* ── Category picker ── */}
+        {view==='pick-category' && (
+          <>
+            <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
+              <button onClick={()=>setView('main')} style={{...iconBtn('var(--text)','var(--surface2)'),flexShrink:0}}>
+                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0}}>Pick Category</h2>
             </div>
-            <div>
-              <label style={fieldLabel}>Location *</label>
-              <input className="input" style={{width:'100%',boxSizing:'border-box',padding:'10px 12px'}} placeholder="Warehouse A" value={location} onChange={e=>setLocation(e.target.value)}/>
-            </div>
-          </div>
-
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
-            <div>
-              <label style={fieldLabel}>Serial</label>
-              <input className="input" style={{width:'100%',boxSizing:'border-box',padding:'10px 12px'}} placeholder="auto" value={serial} onChange={e=>setSerial(e.target.value)}/>
-            </div>
-            <div>
-              <label style={fieldLabel}>Status</label>
-              <select className="input" style={{width:'100%',boxSizing:'border-box',padding:'10px 12px',appearance:'auto'}} value={status} onChange={e=>setStatus(e.target.value)}>
-                <option value="in_office">In Office</option>
-                <option value="deployed">Deployed</option>
-                <option value="faulty">Faulty</option>
-                <option value="returned">Returned</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Component slots */}
-          <div>
-            <label style={fieldLabel}>Components</label>
-            <div style={{display:'flex',flexDirection:'column',gap:6}}>
-              {PI_SLOT_CATEGORIES.map(cat=>{
-                const catItems = inventory.filter(i=>i.category?.name===cat);
-                const selectedId = slots[cat]||'';
-                const selected   = inventory.find(i=>i.id===selectedId);
-                const isOpen     = openSlot===cat;
-
+            <div style={{display:'flex',flexDirection:'column',gap:8}}>
+              {cats.map(cat=>{
+                const count = inventory.filter(i=>i.category?.id===cat.id).length;
                 return (
-                  <div key={cat} style={{borderRadius:10,border:'1px solid var(--border)',overflow:'hidden',boxSizing:'border-box'}}>
-                    {/* Slot header */}
-                    <button onClick={()=>setOpenSlot(isOpen?null:cat)} style={{width:'100%',display:'flex',alignItems:'center',gap:8,padding:'9px 12px',background:selectedId?'rgba(207,255,4,0.05)':'transparent',border:'none',cursor:'pointer',textAlign:'left'}}>
-                      <span style={{fontSize:11,fontWeight:600,color:'var(--muted)',width:90,flexShrink:0}}>{cat}</span>
-                      <span style={{flex:1,fontSize:12,color:selected?'var(--lime)':'var(--muted)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
-                        {selected?`${selected.asset}${selected.qty_in_office===0?' (OOS)':''}`:'None'}
-                      </span>
-                      {selected && <button onClick={e=>{e.stopPropagation();setSlots(s=>({...s,[cat]:''}));}} style={{background:'none',border:'none',cursor:'pointer',color:'var(--muted)',padding:0,display:'flex',flexShrink:0}}><I.Close/></button>}
-                      <span style={{color:'var(--muted)',display:'flex',flexShrink:0}}>{isOpen?<ChevUp/>:<ChevDown/>}</span>
-                    </button>
-                    {/* Slot dropdown */}
-                    {isOpen && (
-                      <SlotDropdown items={catItems} selectedId={selectedId} onSelect={id=>setSlot(cat,id)}/>
-                    )}
-                  </div>
+                  <button key={cat.id} onClick={()=>{setPickerCat(cat.name);setVarSearch('');setView('pick-variant');}}
+                    style={{width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'16px 16px',borderRadius:12,background:'var(--surface2)',border:'1px solid var(--border)',cursor:'pointer',textAlign:'left'}}>
+                    <span style={{fontSize:16,fontWeight:600,color:'var(--text)'}}>{cat.name}</span>
+                    <span style={{fontSize:12,color:'var(--muted)'}}>{count} variant{count!==1?'s':''}</span>
+                  </button>
                 );
               })}
+              {cats.length===0 && <p style={{fontSize:13,color:'var(--muted)',textAlign:'center',padding:'24px 0'}}>No categorised items in inventory</p>}
             </div>
-          </div>
+          </>
+        )}
 
-          {/* Extra components */}
-          <div>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
-              <label style={{...fieldLabel,margin:0}}>Additional (non-inventory)</label>
-              <button onClick={()=>setExtras(e=>[...e,''])} style={{height:22,padding:'0 8px',borderRadius:6,background:'var(--surface2)',color:'var(--muted)',border:'none',cursor:'pointer',fontSize:11}}>+ Add</button>
+        {/* ── Variant picker ── */}
+        {view==='pick-variant' && (
+          <>
+            <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
+              <button onClick={()=>setView('pick-category')} style={{...iconBtn('var(--text)','var(--surface2)'),flexShrink:0}}>
+                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0}}>{pickerCat}</h2>
             </div>
-            {extras.length===0
-              ? <p style={{fontSize:11,color:'var(--muted)',margin:0}}>Cables, adapters, misc…</p>
-              : extras.map((e,i)=>(
-                  <div key={i} style={{display:'flex',gap:6,marginBottom:6,alignItems:'center'}}>
-                    <input className="input" style={{flex:1,minWidth:0,boxSizing:'border-box',padding:'8px 11px',fontSize:12}} placeholder="e.g. HDMI cable" value={e} onChange={ev=>setExtras(arr=>arr.map((x,idx)=>idx===i?ev.target.value:x))}/>
-                    <button onClick={()=>setExtras(arr=>arr.filter((_,idx)=>idx!==i))} style={{...iconBtn('var(--muted)','var(--surface2)'),width:30,height:30,flexShrink:0}}><I.Trash/></button>
-                  </div>
-                ))
-            }
-          </div>
-
-          {/* Stock impact */}
-          {(newlyAdded>0||removed>0) && (
-            <div style={{padding:'9px 12px',borderRadius:10,background:'var(--surface2)',border:'1px solid var(--border)'}}>
-              <p style={{fontSize:12,color:'var(--muted)',margin:0}}>
-                {newlyAdded>0&&<span style={{color:'var(--pink)'}}>−{newlyAdded} from stock</span>}
-                {newlyAdded>0&&removed>0&&<span> · </span>}
-                {removed>0&&<span style={{color:'var(--green2)'}}>+{removed} returned</span>}
-              </p>
+            <div style={{display:'flex',alignItems:'center',gap:8,background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:10,padding:'0 12px',height:44,marginBottom:12}}>
+              <I.Search/>
+              <input className="input" style={{flex:1,background:'transparent',border:'none',padding:0,fontSize:14,height:'100%'}} placeholder={`Search ${pickerCat}…`} value={varSearch} onChange={e=>setVarSearch(e.target.value)} autoFocus/>
             </div>
-          )}
+            <div style={{display:'flex',flexDirection:'column',gap:6}}>
+              {variantItems.length===0
+                ? <p style={{fontSize:13,color:'var(--muted)',textAlign:'center',padding:'24px 0'}}>No variants found</p>
+                : variantItems.map(item=>{
+                    const oos = item.qty_in_office<=0;
+                    return (
+                      <button key={item.id} onClick={()=>addComponent(item.id,pickerCat)}
+                        style={{width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderRadius:12,background:'var(--surface2)',border:'1px solid var(--border)',cursor:'pointer',textAlign:'left',boxSizing:'border-box'}}>
+                        <div style={{minWidth:0,flex:1}}>
+                          <p style={{fontSize:15,fontWeight:500,color:'var(--text)',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.asset}</p>
+                          {item.brand && <p style={{fontSize:12,color:'var(--muted)',margin:'2px 0 0'}}>{item.brand}</p>}
+                        </div>
+                        <span style={{fontSize:12,fontWeight:700,flexShrink:0,marginLeft:12,color:oos?'var(--pink)':item.qty_in_office<=3?'#FBBF24':'var(--green2)'}}>
+                          {oos?`${item.qty_in_office} (OOS)`:item.qty_in_office<=3?`${item.qty_in_office} left`:`${item.qty_in_office}`}
+                        </span>
+                      </button>
+                    );
+                  })
+              }
+            </div>
+          </>
+        )}
 
-          <div>
-            <label style={fieldLabel}>Notes</label>
-            <textarea className="input" style={{width:'100%',boxSizing:'border-box',padding:'10px 12px',resize:'none'}} rows={2} value={notes} onChange={e=>setNotes(e.target.value)}/>
-          </div>
-        </div>
+        {/* ── Main form ── */}
+        {view==='main' && (
+          <>
+            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:18}}>
+              <h2 className="font-display" style={{fontWeight:700,fontSize:17,color:'var(--text)',margin:0,flex:1}}>{pi?'Edit Pi':'Assemble Pi'}</h2>
+              <button onClick={onClose} style={{...iconBtn('var(--muted)','var(--surface2)'),flexShrink:0}}><I.Close/></button>
+            </div>
 
-        <button onClick={handleSave} disabled={saving||!label.trim()||!location.trim()} className="btn-primary" style={{width:'100%',padding:'13px 0',marginTop:16,fontSize:14}}>
-          {saving?'Saving…':(pi?'Update Pi':'Assemble Pi')}
-        </button>
-      </div>
-    </div>
-  );
-}
+            <div style={{display:'flex',flexDirection:'column',gap:14}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+                <div>
+                  <label style={fieldLabel}>Label *</label>
+                  <input className="input" style={{width:'100%',boxSizing:'border-box',padding:'12px 13px',fontSize:15}} placeholder="Pi-Alpha-01" value={label} onChange={e=>setLabel(e.target.value)}/>
+                </div>
+                <div>
+                  <label style={fieldLabel}>Location *</label>
+                  <input className="input" style={{width:'100%',boxSizing:'border-box',padding:'12px 13px',fontSize:15}} placeholder="Warehouse A" value={location} onChange={e=>setLocation(e.target.value)}/>
+                </div>
+              </div>
 
-// ─── Slot Dropdown ────────────────────────────────────────────────────────────
-function SlotDropdown({ items, selectedId, onSelect }: {
-  items: Component[]; selectedId: string; onSelect:(id:string)=>void;
-}) {
-  const [search, setSearch] = useState('');
-  const filtered = search.trim() ? items.filter(i=>i.asset.toLowerCase().includes(search.toLowerCase())) : items;
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+                <div>
+                  <label style={fieldLabel}>Serial</label>
+                  <input className="input" style={{width:'100%',boxSizing:'border-box',padding:'12px 13px',fontSize:15}} placeholder="auto" value={serial} onChange={e=>setSerial(e.target.value)}/>
+                </div>
+                <div>
+                  <label style={fieldLabel}>Status</label>
+                  <select className="input" style={{width:'100%',boxSizing:'border-box',padding:'12px 13px',fontSize:15,appearance:'auto'}} value={status} onChange={e=>setStatus(e.target.value)}>
+                    <option value="in_office">In Office</option>
+                    <option value="deployed">Deployed</option>
+                    <option value="faulty">Faulty</option>
+                    <option value="returned">Returned</option>
+                  </select>
+                </div>
+              </div>
 
-  return (
-    <div style={{borderTop:'1px solid var(--border)'}}>
-      <div style={{display:'flex',alignItems:'center',gap:6,padding:'6px 10px',borderBottom:'1px solid var(--border)'}}>
-        <span style={{color:'var(--muted)',display:'flex'}}><I.Search/></span>
-        <input className="input" style={{flex:1,background:'transparent',border:'none',padding:'0',fontSize:12,height:24}} placeholder="Search…" value={search} onChange={e=>setSearch(e.target.value)} autoFocus/>
-      </div>
-      <div style={{maxHeight:160,overflowY:'auto'}}>
-        {filtered.length===0
-          ? <p style={{fontSize:12,color:'var(--muted)',textAlign:'center',padding:'12px 0',margin:0}}>No items</p>
-          : filtered.map((item,i)=>{
-              const oos = item.qty_in_office===0;
-              const sel = item.id===selectedId;
-              return (
-                <button key={item.id} onClick={()=>!oos&&onSelect(item.id)} style={{width:'100%',display:'flex',alignItems:'center',padding:'8px 12px',background:sel?'rgba(207,255,4,0.08)':'transparent',border:'none',borderBottom:i<filtered.length-1?'1px solid var(--border)':'none',cursor:oos?'default':'pointer',opacity:oos?0.45:1,textAlign:'left',boxSizing:'border-box'}}>
-                  <span style={{flex:1,fontSize:12,color:sel?'var(--lime)':'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.asset}</span>
-                  <span style={{fontSize:11,fontWeight:600,flexShrink:0,marginLeft:8,color:oos?'var(--pink)':item.qty_in_office<=3?'#FBBF24':'var(--green2)'}}>
-                    {oos?'OOS':item.qty_in_office<=3?`${item.qty_in_office} left`:`${item.qty_in_office}`}
-                  </span>
+              {/* Selected components */}
+              <div>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+                  <label style={{...fieldLabel,margin:0}}>Components ({selected.length})</label>
+                </div>
+                {selected.map((s,i)=>{
+                  const comp = inventory.find(c=>c.id===s.component_id);
+                  return (
+                    <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'11px 13px',borderRadius:10,background:'var(--surface2)',marginBottom:7}}>
+                      <div style={{flex:1,minWidth:0}}>
+                        <span style={{fontSize:10,fontWeight:600,color:'var(--lime)',textTransform:'uppercase',letterSpacing:'0.05em'}}>{s.role}</span>
+                        <p style={{fontSize:14,fontWeight:500,color:'var(--text)',margin:'2px 0 0',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{comp?.asset||s.component_id}</p>
+                      </div>
+                      <button onClick={()=>removeComponent(i)} style={{...iconBtn('var(--muted)','transparent'),width:36,height:36,flexShrink:0}}><I.Close/></button>
+                    </div>
+                  );
+                })}
+                <button onClick={()=>setView('pick-category')}
+                  style={{width:'100%',height:48,borderRadius:10,background:'rgba(207,255,4,0.06)',color:'var(--lime)',border:'1px dashed rgba(207,255,4,0.3)',cursor:'pointer',fontSize:14,fontWeight:600,display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+                  <I.Plus/> Add Component
                 </button>
-              );
-          })
-        }
+              </div>
+
+              {/* Extra (non-inventory) */}
+              <div>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+                  <label style={{...fieldLabel,margin:0}}>Non-inventory items</label>
+                  <button onClick={()=>setExtras(e=>[...e,''])} style={{height:26,padding:'0 10px',borderRadius:7,background:'var(--surface2)',color:'var(--muted)',border:'none',cursor:'pointer',fontSize:12}}>+ Add</button>
+                </div>
+                {extras.length===0
+                  ? <p style={{fontSize:12,color:'var(--muted)',margin:0}}>Cables, adapters, misc not tracked in inventory</p>
+                  : extras.map((e,i)=>(
+                      <div key={i} style={{display:'flex',gap:8,marginBottom:8,alignItems:'center'}}>
+                        <input className="input" style={{flex:1,minWidth:0,boxSizing:'border-box',padding:'10px 13px',fontSize:14}} placeholder="e.g. HDMI cable" value={e} onChange={ev=>setExtras(arr=>arr.map((x,idx)=>idx===i?ev.target.value:x))}/>
+                        <button onClick={()=>setExtras(arr=>arr.filter((_,idx)=>idx!==i))} style={iconBtn('var(--muted)','var(--surface2)')}><I.Trash/></button>
+                      </div>
+                    ))
+                }
+              </div>
+
+              {/* Stock impact */}
+              {(newlyAdded>0||removed>0) && (
+                <div style={{padding:'10px 13px',borderRadius:10,background:'var(--surface2)',border:'1px solid var(--border)'}}>
+                  <p style={{fontSize:12,color:'var(--muted)',margin:0}}>
+                    {newlyAdded>0&&<span style={{color:'var(--pink)'}}>−{newlyAdded} from stock</span>}
+                    {newlyAdded>0&&removed>0&&<span> · </span>}
+                    {removed>0&&<span style={{color:'var(--green2)'}}>+{removed} returned</span>}
+                  </p>
+                </div>
+              )}
+
+              <div>
+                <label style={fieldLabel}>Notes</label>
+                <textarea className="input" style={{width:'100%',boxSizing:'border-box',padding:'12px 13px',resize:'none',fontSize:14}} rows={2} value={notes} onChange={e=>setNotes(e.target.value)}/>
+              </div>
+            </div>
+
+            <button onClick={handleSave} disabled={saving||!label.trim()||!location.trim()} className="btn-primary" style={{width:'100%',padding:'15px 0',marginTop:18,fontSize:15}}>
+              {saving?'Saving…':(pi?'Update Pi':'Assemble Pi')}
+            </button>
+          </>
+        )}
+
       </div>
     </div>
   );

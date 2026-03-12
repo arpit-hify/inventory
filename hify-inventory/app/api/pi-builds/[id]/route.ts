@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 async function adjustQty(componentId: string, delta: number) {
   const { data } = await supabase.from('components').select('qty_in_office').eq('id', componentId).single();
   if (!data) return;
-  const next = Math.max(0, data.qty_in_office + delta);
+  const next = data.qty_in_office + delta;
   await supabase.from('components').update({ qty_in_office: next }).eq('id', componentId);
 }
 
