@@ -51,7 +51,7 @@ const I = {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const iconBtn = (color: string, bg: string): React.CSSProperties => ({
-  width:34, height:34, borderRadius:9, background:bg, color,
+  width:40, height:40, borderRadius:10, background:bg, color,
   display:'flex', alignItems:'center', justifyContent:'center',
   border:'none', cursor:'pointer', flexShrink:0,
 });
@@ -539,7 +539,7 @@ function CategorySection({ category, items, onAddVariant, onEdit, onDelete, onRe
   onDelete: (i: Component) => void;
   onReceive: (i: Component) => void;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const total = items.reduce((s,i)=>s+i.qty_in_office,0);
 
   return (
@@ -561,9 +561,9 @@ function CategorySection({ category, items, onAddVariant, onEdit, onDelete, onRe
               {(item.brand||item.vendor) && <p style={{fontSize:11,color:'var(--muted)',margin:'1px 0 0'}}>{[item.brand,item.vendor].filter(Boolean).join(' · ')}</p>}
             </div>
             <span className={`badge ${sb.cls}`} style={{flexShrink:0}}>{sb.label}</span>
-            <button onClick={()=>onReceive(item)} style={{...iconBtn('var(--green2)','rgba(79,168,101,0.12)'),width:28,height:28,borderRadius:7}}><PackIcon/></button>
-            <button onClick={()=>onEdit(item)} style={{...iconBtn('var(--pink)','rgba(255,61,110,0.1)'),width:28,height:28,borderRadius:7}}><EditIcon/></button>
-            <button onClick={()=>onDelete(item)} style={{...iconBtn('var(--muted)','var(--surface2)'),width:28,height:28,borderRadius:7}}><TrashIcon/></button>
+            <button onClick={()=>onReceive(item)} style={{...iconBtn('var(--green2)','rgba(79,168,101,0.12)'),width:36,height:36,borderRadius:9}}><PackIcon/></button>
+            <button onClick={()=>onEdit(item)} style={{...iconBtn('var(--pink)','rgba(255,61,110,0.1)'),width:36,height:36,borderRadius:9}}><EditIcon/></button>
+            <button onClick={()=>onDelete(item)} style={{...iconBtn('var(--muted)','var(--surface2)'),width:36,height:36,borderRadius:9}}><TrashIcon/></button>
           </div>
         );
       })}
