@@ -13,8 +13,8 @@
   --text:     #181A20;
   --muted:    #8B8FA8;
 
-  --pink:     var(--pink-600);
-  --pink2:    var(--pink-500);
+  --pink:     #F79009;
+  --pink2:    #FDB022;
   --lime:     #9DB800;
   --lime2:    #8AA800;
   --green:    var(--green-600);
@@ -51,7 +51,7 @@ html, body {
   transition: border-color 0.15s;
   outline: none;
 }
-.input:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(234,23,115,0.1); }
+.input:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(247,144,9,0.15); }
 .input option { background: var(--surface); color: var(--text); }
 
 .btn-primary {
@@ -105,8 +105,8 @@ html, body {
 }
 .badge-green  { background: rgba(3,152,85,0.12);    color: var(--green2); }
 .badge-lime   { background: rgba(155,184,0,0.15);   color: var(--lime2);  }
-.badge-pink   { background: rgba(234,23,115,0.12);  color: var(--pink);   }
-.badge-red    { background: rgba(234,23,115,0.18);  color: var(--pink);   }
+.badge-pink   { background: rgba(247,144,9,0.14);   color: var(--pink);   }
+.badge-red    { background: rgba(234,23,115,0.12);  color: var(--pink-600); }
 .badge-gray   { background: var(--surface2);        color: var(--muted);  }
 
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }

@@ -290,7 +290,7 @@ export default function Home() {
               const active = tab===id;
               return (
                 <button key={id} onClick={()=>switchTab(id)}
-                  style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderRadius:10,background:active?'rgba(234,23,115,0.1)':'transparent',color:active?'var(--pink)':'var(--muted)',border:'none',cursor:'pointer',textAlign:'left',fontFamily:'inherit',fontSize:14,fontWeight:active?600:400,transition:'background 0.15s,color 0.15s'}}>
+                  style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderRadius:10,background:active?'rgba(247,144,9,0.12)':'transparent',color:active?'var(--pink)':'var(--muted)',border:'none',cursor:'pointer',textAlign:'left',fontFamily:'inherit',fontSize:14,fontWeight:active?600:400,transition:'background 0.15s,color 0.15s'}}>
                   <Icon/>{l}
                 </button>
               );
@@ -326,7 +326,7 @@ export default function Home() {
             </div>
             <div style={{display:'flex',gap:6}}>
               <button onClick={fetchAll} style={iconBtn('var(--muted)','var(--surface2)')} title="Refresh"><I.Refresh/></button>
-              <button onClick={()=>setShowQRScanner(true)} style={{height:32,padding:'0 12px',borderRadius:9,background:'rgba(234,23,115,0.1)',color:'var(--pink)',display:'flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,border:'1px solid rgba(234,23,115,0.2)',cursor:'pointer'}}>
+              <button onClick={()=>setShowQRScanner(true)} style={{height:32,padding:'0 12px',borderRadius:9,background:'rgba(247,144,9,0.12)',color:'var(--pink)',display:'flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,border:'1px solid rgba(247,144,9,0.25)',cursor:'pointer'}}>
                 <I.Qr/> Scan
               </button>
             </div>
@@ -342,9 +342,9 @@ export default function Home() {
             <div style={{display:'flex',gap:8}}>
               {tab==='inventory' && <>
                 <button onClick={()=>setShowCategoryModal(true)} style={{height:36,padding:'0 14px',borderRadius:10,background:'rgba(155,184,0,0.12)',color:'var(--lime)',border:'1px solid rgba(155,184,0,0.3)',cursor:'pointer',fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:5}}><I.Tag/> New Category</button>
-                <button onClick={()=>{setEditingInventory(null);setDefaultCategory(null);setShowInventoryModal(true);}} style={{height:36,padding:'0 14px',borderRadius:10,background:'rgba(234,23,115,0.1)',color:'var(--pink)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:5}}><I.Plus/> Add Variant</button>
+                <button onClick={()=>{setEditingInventory(null);setDefaultCategory(null);setShowInventoryModal(true);}} style={{height:36,padding:'0 14px',borderRadius:10,background:'rgba(247,144,9,0.12)',color:'var(--pink)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:5}}><I.Plus/> Add Variant</button>
               </>}
-              {tab==='pis' && <button onClick={()=>{setEditingPi(null);setShowPiModal(true);}} style={{height:36,padding:'0 14px',borderRadius:10,background:'rgba(234,23,115,0.1)',color:'var(--pink)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:5}}><I.Plus/> Assemble Pi</button>}
+              {tab==='pis' && <button onClick={()=>{setEditingPi(null);setShowPiModal(true);}} style={{height:36,padding:'0 14px',borderRadius:10,background:'rgba(247,144,9,0.12)',color:'var(--pink)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:5}}><I.Plus/> Assemble Pi</button>}
             </div>
           </header>
         )}
@@ -375,7 +375,7 @@ export default function Home() {
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
                 <button onClick={()=>{setEditingInventory(null);setDefaultCategory(null);setShowInventoryModal(true);setTab('inventory');}} className="card"
                   style={{padding:'14px',textAlign:'left',border:'none',cursor:'pointer'}}>
-                  <div style={{...iconBtn('var(--pink)','rgba(234,23,115,0.1)'),marginBottom:8}}><I.Plus/></div>
+                  <div style={{...iconBtn('var(--pink)','rgba(247,144,9,0.12)'),marginBottom:8}}><I.Plus/></div>
                   <p style={{fontWeight:600,fontSize:13,color:'var(--text)',margin:0}}>Add Variant</p>
                   <p style={{fontSize:11,color:'var(--muted)',margin:'2px 0 0'}}>New SKU to inventory</p>
                 </button>
@@ -423,7 +423,7 @@ export default function Home() {
                   <button onClick={()=>setShowCategoryModal(true)} style={{height:38,padding:'0 12px',borderRadius:10,background:'rgba(155,184,0,0.12)',color:'var(--lime)',border:'1px solid rgba(155,184,0,0.3)',cursor:'pointer',fontSize:12,fontWeight:600,display:'flex',alignItems:'center',gap:5,flexShrink:0}}>
                     <I.Tag/> Category
                   </button>
-                  <button onClick={()=>{setEditingInventory(null);setDefaultCategory(null);setShowInventoryModal(true);}} style={{...iconBtn('var(--pink)','rgba(234,23,115,0.1)'),width:38,height:38,border:'none',flexShrink:0}}><I.Plus/></button>
+                  <button onClick={()=>{setEditingInventory(null);setDefaultCategory(null);setShowInventoryModal(true);}} style={{...iconBtn('var(--pink)','rgba(247,144,9,0.12)'),width:38,height:38,border:'none',flexShrink:0}}><I.Plus/></button>
                 </>}
               </div>
 
@@ -475,7 +475,7 @@ export default function Home() {
                   <span style={{color:'var(--muted)',flexShrink:0}}><I.Search/></span>
                   <input className="input" style={{flex:1,background:'transparent',border:'none',padding:'0',height:'100%'}} placeholder="Search Pi builds…" value={search} onChange={e=>setSearch(e.target.value)}/>
                 </div>
-                {!isDesktop && <button onClick={()=>{setEditingPi(null);setShowPiModal(true);}} style={{...iconBtn('var(--pink)','rgba(234,23,115,0.1)'),width:38,height:38,border:'none'}}><I.Plus/></button>}
+                {!isDesktop && <button onClick={()=>{setEditingPi(null);setShowPiModal(true);}} style={{...iconBtn('var(--pink)','rgba(247,144,9,0.12)'),width:38,height:38,border:'none'}}><I.Plus/></button>}
               </div>
 
               {loading ? (
@@ -510,7 +510,7 @@ export default function Home() {
                       <button onClick={()=>setViewingPiDetail(pi)} style={{flex:1,height:32,borderRadius:9,background:'rgba(207,255,4,0.08)',color:'var(--lime)',display:'flex',alignItems:'center',justifyContent:'center',gap:5,fontSize:12,fontWeight:600,border:'1px solid rgba(155,184,0,0.18)',cursor:'pointer'}}>
                         <I.Qr/> View / QR
                       </button>
-                      <button onClick={()=>{setEditingPi(pi);setShowPiModal(true);}} style={iconBtn('var(--pink)','rgba(234,23,115,0.1)')}><I.Edit/></button>
+                      <button onClick={()=>{setEditingPi(pi);setShowPiModal(true);}} style={iconBtn('var(--pink)','rgba(247,144,9,0.12)')}><I.Edit/></button>
                       <button onClick={()=>deletePi(pi)} style={iconBtn('var(--muted)','var(--surface2)')}><I.Trash/></button>
                     </div>
                   </div>
@@ -639,7 +639,7 @@ function CategorySection({ category, items, onAddVariant, onEdit, onDelete, onRe
             </div>
             <span className={`badge ${sb.cls}`} style={{flexShrink:0}}>{sb.label}</span>
             <button onClick={()=>onReceive(item)} style={{...iconBtn('var(--green2)','rgba(3,152,85,0.12)'),width:36,height:36,borderRadius:9}}><PackIcon/></button>
-            <button onClick={()=>onEdit(item)} style={{...iconBtn('var(--pink)','rgba(234,23,115,0.1)'),width:36,height:36,borderRadius:9}}><EditIcon/></button>
+            <button onClick={()=>onEdit(item)} style={{...iconBtn('var(--pink)','rgba(247,144,9,0.12)'),width:36,height:36,borderRadius:9}}><EditIcon/></button>
             <button onClick={()=>onDelete(item)} style={{...iconBtn('var(--muted)','var(--surface2)'),width:36,height:36,borderRadius:9}}><TrashIcon/></button>
           </div>
         );
@@ -854,7 +854,7 @@ function PiDetailModal({ pi, onClose, onEdit, onGenerateQR, isDesktop=false }: {
               <I.Qr/> Generate QR
             </button>
           )}
-          <button onClick={()=>onEdit(pi)} style={{flex:1,height:40,borderRadius:10,background:'rgba(234,23,115,0.1)',color:'var(--pink)',display:'flex',alignItems:'center',justifyContent:'center',gap:6,fontSize:13,fontWeight:600,border:'1px solid rgba(234,23,115,0.2)',cursor:'pointer'}}>
+          <button onClick={()=>onEdit(pi)} style={{flex:1,height:40,borderRadius:10,background:'rgba(247,144,9,0.12)',color:'var(--pink)',display:'flex',alignItems:'center',justifyContent:'center',gap:6,fontSize:13,fontWeight:600,border:'1px solid rgba(247,144,9,0.25)',cursor:'pointer'}}>
             <I.Edit/> Edit Pi
           </button>
         </div>
