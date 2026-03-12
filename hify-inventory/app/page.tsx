@@ -441,7 +441,7 @@ export default function Home() {
               ) : filteredInventory.length===0 ? (
                 <div style={{textAlign:'center',paddingTop:60,color:'var(--muted)',fontSize:13}}>No assets found</div>
               ) : (
-                <div style={{display:'flex',flexDirection:'column',gap:0}}>
+                <div style={{display: isDesktop ? 'grid' : 'flex', gridTemplateColumns: isDesktop ? '1fr 1fr' : undefined, flexDirection:'column', gap:10, alignItems:'start'}}>
                   {grouped.map(({category,items})=>(
                     <CategorySection key={category.id} category={category} items={items}
                       onAddVariant={()=>{ setEditingInventory(null); setDefaultCategory(category); setShowInventoryModal(true); }}
@@ -616,7 +616,7 @@ function CategorySection({ category, items, onAddVariant, onEdit, onDelete, onRe
   const total = items.reduce((s,i)=>s+i.qty_in_office,0);
 
   return (
-    <div className="card" style={{overflow:'hidden',breakInside:'avoid',marginBottom:10}}>
+    <div className="card" style={{overflow:'hidden'}}>
       {/* Header */}
       <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 12px',borderBottom:collapsed?'none':'1px solid var(--border)',cursor:'pointer'}} onClick={()=>setCollapsed(c=>!c)}>
         <span style={{flex:1,fontWeight:600,fontSize:13,color:'var(--text)'}}>{category?.name||'Uncategorized'}</span>
