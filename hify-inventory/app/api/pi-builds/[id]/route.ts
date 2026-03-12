@@ -37,13 +37,17 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   await supabase.from('pi_components').delete().eq('pi_unit_id', id);
   if (newLinks.length > 0) await supabase.from('pi_components').insert(newLinks);
 
-  // Return removed components to inventory (+1 each)
-  const removed = oldIds.filter(oid => !newIds.includes(oid));
-  for (const cid of removed) await adjustQty(cid, +1);
+  // Count occurrences in old and new, adjust by the difference
+  const oldCounts: Record<string, number> = {};
+  for (const id of oldIds) oldCounts[id] = (oldCounts[id] || 0) + 1;
+  const newCounts: Record<string, number> = {};
+  for (const id of newIds) newCounts[id] = (newCounts[id] || 0) + 1;
 
-  // Deduct newly added components from inventory (-1 each)
-  const added = newIds.filter(nid => !oldIds.includes(nid));
-  for (const cid of added) await adjustQty(cid, -1);
+  const allIds = new Set([...oldIds, ...newIds]);
+  for (const cid of allIds) {
+    const delta = (newCounts[cid] || 0) - (oldCounts[cid] || 0);
+    if (delta !== 0) await adjustQty(cid, -delta); // negative delta = returned to stock
+  }
 
   await supabase.from('stock_transactions').insert({
     type: 'adjustment',

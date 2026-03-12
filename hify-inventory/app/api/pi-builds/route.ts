@@ -33,11 +33,12 @@ export async function POST(req: NextRequest) {
 
   if (links.length > 0) {
     await supabase.from('pi_components').insert(links);
-    for (const link of links) {
-      const { data: comp } = await supabase.from('components').select('qty_in_office').eq('id', link.component_id).single();
-      if (comp && comp.qty_in_office > 0) {
-        await supabase.from('components').update({ qty_in_office: comp.qty_in_office - 1 }).eq('id', link.component_id);
-      }
+    // Count how many of each component_id are used, then deduct once per component
+    const counts: Record<string, number> = {};
+    for (const link of links) counts[link.component_id] = (counts[link.component_id] || 0) + 1;
+    for (const [cid, count] of Object.entries(counts)) {
+      const { data: comp } = await supabase.from('components').select('qty_in_office').eq('id', cid).single();
+      if (comp) await supabase.from('components').update({ qty_in_office: comp.qty_in_office - count }).eq('id', cid);
     }
   }
 
